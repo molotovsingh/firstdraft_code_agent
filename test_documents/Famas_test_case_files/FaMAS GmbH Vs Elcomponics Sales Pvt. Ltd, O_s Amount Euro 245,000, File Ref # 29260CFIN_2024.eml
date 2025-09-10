@@ -1,0 +1,1384 @@
+Received: from [192.168.1.118] ([122.176.91.62])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-7a9fa593b8fsm1006208a12.82.2024.07.25.04.14.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 25 Jul 2024 04:14:23 -0700 (PDT)
+Received: by 2002:a17:907:7f90:b0:a77:b817:23a with SMTP id qk16csp3840568ejc;
+        Thu, 25 Jul 2024 04:14:27 -0700 (PDT)
+Received: from mail-sor-f41.google.com (mail-sor-f41.google.com. [209.85.220.41])
+        by mx.google.com with SMTPS id 8926c6da1cb9f-4c29fb667ebsor492228173.11.2024.07.25.04.14.24
+        for <info@elcomponics.com>
+        (Google Transport Security);
+        Thu, 25 Jul 2024 04:14:24 -0700 (PDT)
+Received: from mail-sor-f69.google.com (mail-sor-f69.google.com. [209.85.220.69])
+        by mx.google.com with SMTPS id ca18e2360f4ac-81f7d5adbe9sor81108139f.0.2024.07.25.04.14.26
+        for <catchall@elcomponics.com>
+        (Google Transport Security);
+        Thu, 25 Jul 2024 04:14:26 -0700 (PDT)
+From: <legal@kplawassociates.com>
+To: <shivandra@elcomponics.com>,
+	<rahul@elcomponics.com>
+Cc: <akhil.gupta@elcomponics.com>,
+	"C S" <cs@elcomponics.com>,
+	"Info C24" <info@elcomponics.com>
+Subject: FaMAS GmbH Vs Elcomponics Sales Pvt. Ltd, O/s Amount Euro 245,000, File Ref # 29260CFIN/2024
+Date: Thu, 25 Jul 2024 16:44:18 +0530
+Message-ID: <663eb256-a8ce-4972-b759-98aac95ab452@kplawassociates.com>
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_000_027D_01DC1E88.2BD11320"
+X-Priority: 1 (Highest)
+X-Priority: 1 (Highest)
+X-MSMail-Priority: High
+X-Mailer: Microsoft Outlook 16.0
+X-Google-Smtp-Source: AGHT+IFhozbspaPYt8P8NUtxvIVGiffwnNsAi5ZpMnQ/x652LP1AV8O5Siw+9zhmGxL4jRqXYyiVNA==
+X-Received: by 2002:a05:6e02:1c2b:b0:399:4535:b66e with SMTP id e9e14a558f8ab-39a217d86a2mr37266765ab.9.1721906063814;
+        Thu, 25 Jul 2024 04:14:23 -0700 (PDT)
+X-Received: by 2002:a05:6602:6119:b0:803:cc64:e0bf with SMTP id ca18e2360f4ac-81f7bd127e4mr316863539f.2.1721906066945;
+        Thu, 25 Jul 2024 04:14:26 -0700 (PDT)
+X-Received: by 2002:a05:6602:1502:b0:7f9:62f1:4e12 with SMTP id ca18e2360f4ac-81f7be992camr361322739f.13.1721906066107;
+        Thu, 25 Jul 2024 04:14:26 -0700 (PDT)
+X-Received: by 2002:a05:6602:1502:b0:7f9:62f1:4e12 with SMTP id ca18e2360f4ac-81f7be992camr361320639f.13.1721906065415;
+        Thu, 25 Jul 2024 04:14:25 -0700 (PDT)
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@kplawassociates.com header.s=google header.b=CSoJh0ct;
+       arc=pass (i=2 spf=pass spfdomain=kplawassociates.com dkim=pass dkdomain=kplawassociates.com dmarc=pass fromdomain=kplawassociates.com);
+       spf=pass (google.com: domain of legal@kplawassociates.com designates 209.85.220.69 as permitted sender) smtp.mailfrom=legal@kplawassociates.com;
+       dmarc=pass (p=QUARANTINE sp=REJECT dis=NONE) header.from=kplawassociates.com;
+       dara=pass header.i=@elcomponics.com
+Thread-Index: AQEUOcBZT8BL1NjrkhO4c0MB4iciMQ==
+X-MailServer: PostMaster Enterprise v8.08-RC65 on [192.168.3.201] Windows 10 (10.0)
+content-language: en-us
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1721906066; x=1722510866;
+        h=disposition-notification-to:cc:subject:from:to:content-language
+         :user-agent:mime-version:date:message-id:dkim-signature
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=EuHCupSu2y9nCo6XtFBF+Dtil8RrEpyM0WKXNkSgQdQ=;
+        b=M46o3FoQ6woL/VgchapQW65Wh3Csv4NOP3lv0WK6d6xfXpq19DlLkbo5Jdxv+ykdug
+         Hipe0nlMIdncpN/dyrXemHcu8mqTkcmWy66sZ34hBiE76TVIBEg6FzrE+xdStHyMtZK6
+         Ea3yyZW7Qa+Fmop3fI002wTtlZSy6Pm0PLXW0Rv8mTE06Q/1/UBoMobgo0e35OYQwG1S
+         Uej6qwne7ug2GE6Lmc+f+I0W1x7RjevbupXP/N9MxyAmWFPmcWFAAc8PBLGgFIt6Zsf6
+         Uy8yqYrrVDIZSy9t0HO1e+QKsLLdGF7l1ajAsBtqZWQF38MupdKHx5SLCUFS+pXiNFUs
+         Z6Cw==
+X-Gm-Message-State: AOJu0YzPxTOt/znBkWyj2NljeutXw/1+TBpsndSu0CUbqxC7z9QwUk7h
+	oKbbhA3WBOgbveePiqkF05nChe7luzPs85HpWLrIpPz91fZQaEnWBe8KwlJZhZWLD8hmiWxkVld
+	N9+cmiuHJnhMKZcntOlC56s3aPkwr4/2gScE41sBd7xh3Eto2voRk1KOgcS9P9mJLLr1ok2zEaa
+	97Eq0ANFIPq8vVIQ==
+X-POP3-Server: Host ([pop.gmail.com]) 	by elcomponics.com (PostMaster POP3 Login [catchall@elcomponics.com] [192.168.3.201]); 	Thu, 25 Jul 2024 16:47:11 +0530
+X-Forwarded-Encrypted: i=1; AJvYcCWnDb/3TTlMUrAF6ysItwNdI8aFGk//1fd5LB15JoZI1ITbj8rdMDQBEJTlTQWPoqt1+zz1J/sIkL/RFpE+z04JyJQIDw==
+X-Forwarded-Encrypted: i=2; AJvYcCXzNpXDgkXQRXAPqNH2W1Jem8Qu3pds4PQ/rSkmyjvy1qwPI+k7hTMsdQsFA77YigYTYh4ifqYMyv8zbSgt8ngb9EqP3tyErqE=
+X-Forwarded-Encrypted: i=4; AJvYcCWW+bL4b0FdKyaSZXa+7UTNtKerDpDb+/hHdGznQnv5zPv8nDcWuH2tggcX4T8SMDSAMCJL1drjuxMqsyY7L86Ub9eZMUW36uI=
+X-PMAttribute: 1721906231250.26456; imapid=38624; del_to=cs; mb_id=QSM1415425339774
+Importance: High
+Disposition-Notification-To: <legal@kplawassociates.com>
+
+This is a multipart message in MIME format.
+
+------=_NextPart_000_027D_01DC1E88.2BD11320
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+Kind Attn : Mr. Shivendra Dwivedi
+
+Dear Sir,
+
+
+This is in connection with the outstanding payment of EUR2,45,000.00 =
+[Euro Two Lakh Forty-Five Thousand Only], due from =E2=80=98Elcomponics =
+Sales Pvt. Ltd.=E2=80=99 to =E2=80=98FaMAS GmbH=E2=80=99 [hereinafter =
+referred to as =E2=80=9CFaMAS=E2=80=9D] having its address at: =
+Leopoldstra=C3=9Fe 244, 80807 M=C3=BCnchen, Germany and we wish to =
+address you as under:-
+
+=20
+
+1. Pursuant to the commercial transaction between =E2=80=98Elcomponics =
+Sales Pvt. Ltd.=E2=80=99 and 'FaMAS', you had entered into contract with =
+'FaMAS' by accepting the =E2=80=98Engagement Letter for Company Search, =
+Screening and Transaction Advisory Service=E2=80=99, dated 01.07.2020 =
+for availing certain services =E2=80=9Csearching and evaluation of =
+possible investment opportunities in companies=E2=80=9Das defined under =
+the terms and conditions and scope of work of the said engagement letter =
+dated 01.07.2020.=20
+
+=20
+
+2. The engagement letter dated 01.07.2020, specifically and prominently =
+indicated that you shall pay the fees indicated in Phase 1 and Phase of =
+the said engagement and in addition 'FaMAS' will be entitled to =
+Transaction Fee for investment as defined and attached on Page 9 of the =
+said engagement letter.
+
+=20
+
+3. 'FaMAS' provided the services as per the terms of engagement =
+resulting into transaction value estimate at EUR 7 Million for 26% of =
+the shares of Invictus. However, you neglected to adhere to the =
+aforesaid payment terms and have failed to make payment to 'FaMAS' and =
+therefore a sum of EUR2,45,000.00 [Euro Two Lakh Forty-Five Thousand =
+Only] has remained payable by you to 'FaMAS'. Details of the unpaid =
+Invoices / outstanding are as under:-
+
+=20
+
+
+S.No
+
+Invoice No.
+
+Invoice Date
+
+Invoice Amount (EUR)
+
+
+1
+
+ELSA10/2023
+
+27.10.2023
+
+2,45,000.00
+
+=20
+
+4. You are, therefore, requested to kindly look into the matter and =
+ensure to make payment of EUR2,45,000.00 [Euro Two Lakh Forty-Five =
+Thousand Only] to 'FaMAS'. Alternatively, provide reasons for =
+non-payment.
+
+=20
+
+5. This is without prejudice to other rights and remedies of 'FaMAS' =
+against you.
+
+
+
+--=20
+
+Regards,=20
+
+T.Mohakud (Advocate)
+
+
+
+K & P Law Associates=20
+
+# 907, DLF Tower A, Jasola District Center
+
+New Delhi - 110025, INDIA
+
+Tel : +91-11- 2694 0576/77
+
+Mob : +91-74286 97538
+
+
+
+------=_NextPart_000_027D_01DC1E88.2BD11320
+Content-Type: text/html;
+	boundary="------------EtRtbDdeWp3dEDtwe00gq87w";
+	charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html>
+<html>
+  <head>
+<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
+charset=3DUTF-8">
+
+
+   =20
+  </head>
+  <body>
+    <p><!--[if gte mso =
+9]><xml><o:DocumentProperties><o:Revision>1</o:Revision><o:Pages>1</o:Pag=
+es><o:Lines>1</o:Lines><o:Paragraphs>1</o:Paragraphs></o:DocumentProperti=
+es></xml><![endif]--><!--[if gte mso =
+9]><xml><o:OfficeDocumentSettings></o:OfficeDocumentSettings></xml><![end=
+if]--><!--[if gte mso =
+9]><xml><w:WordDocument><w:BrowserLevel>MicrosoftInternetExplorer4</w:Bro=
+wserLevel><w:DisplayHorizontalDrawingGridEvery>0</w:DisplayHorizontalDraw=
+ingGridEvery><w:DisplayVerticalDrawingGridEvery>2</w:DisplayVerticalDrawi=
+ngGridEvery><w:DocumentKind>DocumentNotSpecified</w:DocumentKind><w:Drawi=
+ngGridVerticalSpacing>7.8 =
+=E7=A3=85</w:DrawingGridVerticalSpacing><w:PunctuationKerning></w:Punctua=
+tionKerning><w:View>Normal</w:View><w:Compatibility><w:AdjustLineHeightIn=
+Table/><w:DontGrowAutofit/><w:BalanceSingleByteDoubleByteWidth/><w:DoNotE=
+xpandShiftReturn/></w:Compatibility><w:Zoom>0</w:Zoom></w:WordDocument></=
+xml><![endif]--><!--[if gte mso 9]><xml><w:LatentStyles =
+DefLockedState=3D"false"  DefUnhideWhenUsed=3D"true"  =
+DefSemiHidden=3D"true"  DefQFormat=3D"false"  DefPriority=3D"99"  =
+LatentStyleCount=3D"260" >
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Normal" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"heading 1" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"heading 2" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"heading 3" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"heading 4" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"heading 5" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"heading 6" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"heading 7" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"heading 8" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"heading 9" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"index 1" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"index 2" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"index 3" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"index 4" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"index 5" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"index 6" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"index 7" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"index 8" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"index 9" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"toc 1" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"toc 2" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"toc 3" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"toc 4" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"toc 5" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"toc 6" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"toc 7" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"toc 8" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"toc 9" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Normal Indent" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"footnote text" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"annotation text" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"header" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"footer" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"index heading" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"caption" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"table of figures" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"envelope address" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"envelope return" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"footnote reference" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"annotation reference" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"line number" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"page number" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"endnote reference" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"endnote text" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"table of authorities" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"macro" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"toa heading" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"List" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"List Bullet" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"List Number" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"List 2" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"List 3" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"List 4" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"List 5" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"List Bullet 2" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"List Bullet 3" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"List Bullet 4" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"List Bullet 5" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"List Number 2" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"List Number 3" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"List Number 4" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"List Number 5" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Title" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Closing" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Signature" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Default Paragraph Font" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Body Text" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Body Text Indent" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"List Continue" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"List Continue 2" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"List Continue 3" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"List Continue 4" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"List Continue 5" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Message Header" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Subtitle" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Salutation" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Date" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Body Text First Indent" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Body Text First Indent 2" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Note Heading" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Body Text 2" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Body Text 3" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Body Text Indent 2" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Body Text Indent 3" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Block Text" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Hyperlink" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"FollowedHyperlink" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Strong" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Emphasis" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Document Map" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Plain Text" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"E-mail Signature" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Normal (Web)" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"HTML Acronym" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"HTML Address" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"HTML Cite" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"HTML Code" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"HTML Definition" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"HTML Keyboard" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"HTML Preformatted" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"HTML Sample" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"HTML Typewriter" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"HTML Variable" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Normal Table" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"annotation subject" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"No List" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"1 / a / i" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"1 / 1.1 / 1.1.1" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Article / Section" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table Simple 1" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table Simple 2" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table Simple 3" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table Classic 1" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table Classic 2" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table Classic 3" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table Classic 4" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table Colorful 1" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table Colorful 2" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table Colorful 3" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table Columns 1" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table Columns 2" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table Columns 3" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table Columns 4" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table Columns 5" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table Grid 1" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table Grid 2" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table Grid 3" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table Grid 4" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table Grid 5" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table Grid 6" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table Grid 7" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table Grid 8" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table List 1" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table List 2" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table List 3" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table List 4" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table List 5" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table List 6" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table List 7" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table List 8" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table 3D effects 1" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table 3D effects 2" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table 3D effects 3" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table Contemporary" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table Elegant" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table Professional" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table Subtle 1" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table Subtle 2" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table Web 1" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table Web 2" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table Web 3" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Balloon Text" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table Grid" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Table Theme" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Placeholder Text" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"No Spacing" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Light Shading" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Light List" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Light Grid" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium Shading 1" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium Shading 2" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium List 1" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium List 2" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium Grid 1" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium Grid 2" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium Grid 3" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Dark List" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Colorful Shading" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Colorful List" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Colorful Grid" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Light Shading Accent 1" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Light List Accent 1" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Light Grid Accent 1" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium Shading 1 Accent 1" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium Shading 2 Accent 1" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium List 1 Accent 1" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"List Paragraph" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Quote" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Intense Quote" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium List 2 Accent 1" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium Grid 1 Accent 1" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium Grid 2 Accent 1" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium Grid 3 Accent 1" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Dark List Accent 1" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Colorful Shading Accent 1" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Colorful List Accent 1" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Colorful Grid Accent 1" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Light Shading Accent 2" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Light List Accent 2" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Light Grid Accent 2" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium Shading 1 Accent 2" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium Shading 2 Accent 2" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium List 1 Accent 2" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium List 2 Accent 2" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium Grid 1 Accent 2" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium Grid 2 Accent 2" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium Grid 3 Accent 2" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Dark List Accent 2" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Colorful Shading Accent 2" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Colorful List Accent 2" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Colorful Grid Accent 2" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Light Shading Accent 3" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Light List Accent 3" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Light Grid Accent 3" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium Shading 1 Accent 3" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium Shading 2 Accent 3" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium List 1 Accent 3" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium List 2 Accent 3" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium Grid 1 Accent 3" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium Grid 2 Accent 3" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium Grid 3 Accent 3" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Dark List Accent 3" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Colorful Shading Accent 3" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Colorful List Accent 3" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Colorful Grid Accent 3" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Light Shading Accent 4" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Light List Accent 4" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Light Grid Accent 4" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium Shading 1 Accent 4" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium Shading 2 Accent 4" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium List 1 Accent 4" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium List 2 Accent 4" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium Grid 1 Accent 4" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium Grid 2 Accent 4" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium Grid 3 Accent 4" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Dark List Accent 4" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Colorful Shading Accent 4" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Colorful List Accent 4" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Colorful Grid Accent 4" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Light Shading Accent 5" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Light List Accent 5" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Light Grid Accent 5" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium Shading 1 Accent 5" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium Shading 2 Accent 5" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium List 1 Accent 5" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium List 2 Accent 5" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium Grid 1 Accent 5" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium Grid 2 Accent 5" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium Grid 3 Accent 5" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Dark List Accent 5" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Colorful Shading Accent 5" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Colorful List Accent 5" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Colorful Grid Accent 5" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Light Shading Accent 6" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Light List Accent 6" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Light Grid Accent 6" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium Shading 1 Accent 6" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium Shading 2 Accent 6" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium List 1 Accent 6" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium List 2 Accent 6" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium Grid 1 Accent 6" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium Grid 2 Accent 6" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Medium Grid 3 Accent 6" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Dark List Accent 6" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Colorful Shading Accent 6" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Colorful List Accent 6" ></w:LsdException>
+<w:LsdException Locked=3D"false"  Priority=3D"99"  SemiHidden=3D"false"  =
+Name=3D"Colorful Grid Accent 6" ></w:LsdException>
+</w:LatentStyles></xml><![endif]--></p>
+    <p class=3D"p"
+style=3D"margin-bottom:0.0000pt;mso-pagination:widow-orphan;text-align:ju=
+stify;
+text-justify:inter-ideograph;" align=3D"justify"><font
+        face=3D"Times New Roman, Times, serif"><span
+style=3D"color: rgb(0, 0, 0); font-style: normal; font-size: =
+12pt;"><u><b>Kind
+              Attn : Mr. Shivendra Dwivedi</b></u></span></font></p>
+    <p class=3D"p"
+style=3D"margin-bottom:0.0000pt;mso-pagination:widow-orphan;text-align:ju=
+stify;
+text-justify:inter-ideograph;" align=3D"justify"><font
+        face=3D"Times New Roman, Times, serif"><span
+style=3D"color: rgb(0, 0, 0); font-style: normal; font-size: 12pt;">Dear
+          Sir</span><span
+style=3D"color: rgb(0, 0, 0); font-style: normal; font-size: =
+12pt;">,</span><span
+style=3D"color: rgb(0, 0, 0); font-style: normal; font-size: =
+12pt;"></span><span
+style=3D"color: rgb(0, 0, 0); font-style: normal; font-size: 12pt;"><br>
+        </span></font></p>
+    <p class=3D"p"
+style=3D"margin-bottom:0.0000pt;mso-pagination:widow-orphan;text-align:ju=
+stify;
+text-justify:inter-ideograph;" align=3D"justify"><font
+        face=3D"Times New Roman, Times, serif"><span
+style=3D"color: rgb(0, 0, 0); font-style: normal; font-size: 12pt;">This
+          is in connection with the outstanding payment of
+          EUR2,45,000.00 [Euro Two Lakh Forty-Five Thousand Only], due
+          from =E2=80=98Elcomponics Sales Pvt. Ltd.=E2=80=99 to =
+=E2=80=98FaMAS GmbH=E2=80=99
+          [hereinafter referred to as </span><b><span
+style=3D"color: rgb(0, 0, 0); font-weight: bold; font-style: normal; =
+font-size: 12pt;">=E2=80=9CFaMAS=E2=80=9D</span></b><span
+style=3D"color: rgb(0, 0, 0); font-style: normal; font-size: 12pt;">]
+          having its address at: </span><span
+style=3D"color: rgb(0, 0, 0); font-style: normal; font-size: =
+12pt;">Leopoldstra=C3=9Fe
+          244, 80807 M=C3=BCnchen, Germany</span><span
+style=3D"color: rgb(0, 0, 0); font-style: normal; font-size: =
+12pt;">=C2=A0and </span><span
+style=3D"color: rgb(0, 0, 0); font-style: normal; font-size: 12pt;">we
+          wish to address you as under:-</span><span
+style=3D"color: rgb(0, 0, 0); font-style: normal; font-size: =
+12pt;"></span></font></p>
+    <p class=3D"p"
+style=3D"margin-bottom:0.0000pt;mso-pagination:widow-orphan;text-align:ju=
+stify;
+text-justify:inter-ideograph;" align=3D"justify"><font
+        face=3D"Times New Roman, Times, serif"><span
+style=3D"color: rgb(0, 0, 0); font-style: normal; font-size: =
+12pt;">=C2=A0</span></font></p>
+    <p class=3D"p"
+style=3D"margin-top:0.0000pt;margin-right:0.0000pt;margin-bottom:0.0000pt=
+;
+margin-left:21.2500pt;mso-para-margin-left:0.0000gd;text-indent:-21.2500p=
+t;
+mso-char-indent-count:0.0000;text-autospace:ideograph-numeric;mso-paginat=
+ion:widow-orphan;
+text-align:justify;text-justify:inter-ideograph;mso-list:l0 level1 =
+lfo1;"
+      align=3D"justify"><font face=3D"Times New Roman, Times, =
+serif"><span
+          style=3D"color: rgb(0, 0, 0); font-size: 12pt;"><span
+            =
+style=3D"mso-list:Ignore;">1.<span>=C2=A0</span></span></span><span
+          style=3D"color: rgb(0, 0, 0); font-size: 12pt;">Pursuant to =
+the
+          commercial transaction between </span><span
+          style=3D"color: rgb(0, 0, 0); font-size: =
+12pt;">=E2=80=98</span><span
+          style=3D"color: rgb(0, 0, 0); font-size: 12pt;">Elcomponics
+          Sales Pvt. Ltd.</span><span
+          style=3D"color: rgb(0, 0, 0); font-size: =
+12pt;">=E2=80=99</span><span
+          style=3D"color: rgb(0, 0, 0); font-size: 12pt;">=C2=A0and =
+'</span><span
+          style=3D"color: rgb(0, 0, 0); font-size: =
+12pt;">FaMAS</span><span
+          style=3D"color: rgb(0, 0, 0); font-size: 12pt;">', you =
+</span><span
+          style=3D"color: rgb(0, 0, 0); font-size: 12pt;">had =
+</span><span
+          style=3D"color: rgb(0, 0, 0); font-size: 12pt;">entered into =
+</span><span
+          style=3D"color: rgb(0, 0, 0); font-size: 12pt;">contract with =
+</span><span
+          style=3D"color: rgb(0, 0, 0); font-size: 12pt;">'</span><span
+          style=3D"color: rgb(0, 0, 0); font-size: =
+12pt;">FaMAS</span><span
+          style=3D"color: rgb(0, 0, 0); font-size: 12pt;">'</span><span
+          style=3D"color: rgb(0, 0, 0); font-size: =
+12pt;">=C2=A0</span><span
+          style=3D"color: rgb(0, 0, 0); font-size: 12pt;">by accepting =
+the
+        </span><span style=3D"font-size: 12pt;">=E2=80=98</span><span
+          style=3D"font-size: 12pt;">Engagement Letter for Company =
+Search,
+          Screening and Transaction Advisory =
+Service=E2=80=99</span><span
+          style=3D"font-size: 12pt;">, </span><span
+          style=3D"font-size: 12pt;">dated 01.07.2020</span><span
+          style=3D"font-size: 12pt;">=C2=A0for </span><span
+          style=3D"font-size: 12pt;">availing</span><span
+          style=3D"font-size: 12pt;">=C2=A0certain services</span><span
+          style=3D"font-size: 12pt;">=C2=A0</span><i><span
+            style=3D"font-style: italic; font-size: =
+12pt;">=E2=80=9Csearching and
+            evaluation of possible investment opportunities in
+            companies=E2=80=9D</span></i><span
+          style=3D"font-style: normal; font-size: 12pt;">as defined =
+under
+          the terms and conditions and scope of work of the said
+          engagement letter dated 01.07.2020</span><span
+          style=3D"font-size: 12pt;">. </span><span
+          style=3D"font-size: 12pt;"></span></font></p>
+    <p class=3D"p"
+style=3D"margin-top:0.0000pt;margin-right:0.0000pt;margin-bottom:0.0000pt=
+;
+mso-para-margin-right:0.0000gd;mso-para-margin-left:0.0000gd;text-autospa=
+ce:ideograph-numeric;
+mso-pagination:widow-orphan;text-align:justify;text-justify:inter-ideogra=
+ph;"
+      align=3D"justify"><font face=3D"Times New Roman, Times, =
+serif"><span
+          style=3D"font-size: 12pt;">=C2=A0</span></font></p>
+    <p class=3D"p"
+style=3D"margin-top:0.0000pt;margin-right:0.0000pt;margin-bottom:0.0000pt=
+;
+margin-left:21.2500pt;mso-para-margin-left:0.0000gd;text-indent:-21.2500p=
+t;
+mso-char-indent-count:0.0000;text-autospace:ideograph-numeric;mso-paginat=
+ion:widow-orphan;
+text-align:justify;text-justify:inter-ideograph;mso-list:l0 level1 =
+lfo1;"
+      align=3D"justify"><font face=3D"Times New Roman, Times, =
+serif"><span
+          style=3D"font-size: 12pt;"><span =
+style=3D"mso-list:Ignore;">2.<span>=C2=A0</span></span></span><span
+          style=3D"font-size: 12pt;">The </span><span
+          style=3D"font-style: normal; font-size: 12pt;">engagement =
+letter
+          dated 01.07.2020, specifically and prominently indicated that
+          you shall pay the fees indicated in Phase 1 and Phase of the
+          said engagement and in addition </span><span
+          style=3D"color: rgb(0, 0, 0); font-size: 12pt;">'</span><span
+          style=3D"color: rgb(0, 0, 0); font-size: =
+12pt;">FaMAS</span><span
+          style=3D"color: rgb(0, 0, 0); font-size: 12pt;">'</span><span
+          style=3D"color: rgb(0, 0, 0); font-size: 12pt;">=C2=A0will be
+          entitled to Transaction Fee for investment as defined and
+          attached on Page 9 of the said engagement letter.</span><span
+          style=3D"font-size: 12pt;"></span></font></p>
+    <p class=3D"p"
+style=3D"margin-top:0.0000pt;margin-right:0.0000pt;margin-bottom:0.0000pt=
+;
+mso-para-margin-right:0.0000gd;mso-para-margin-left:0.0000gd;text-autospa=
+ce:ideograph-numeric;
+mso-pagination:widow-orphan;text-align:justify;text-justify:inter-ideogra=
+ph;"
+      align=3D"justify"><font face=3D"Times New Roman, Times, =
+serif"><span
+          style=3D"font-size: 12pt;">=C2=A0</span></font></p>
+    <p class=3D"p"
+style=3D"margin-top:0.0000pt;margin-right:0.0000pt;margin-bottom:0.0000pt=
+;
+margin-left:21.2500pt;mso-para-margin-left:0.0000gd;text-indent:-21.2500p=
+t;
+mso-char-indent-count:0.0000;text-autospace:ideograph-numeric;mso-paginat=
+ion:widow-orphan;
+text-align:justify;text-justify:inter-ideograph;mso-list:l0 level1 =
+lfo1;"
+      align=3D"justify"><font face=3D"Times New Roman, Times, =
+serif"><span
+          style=3D"color: rgb(0, 0, 0); font-size: 12pt;"><span
+            =
+style=3D"mso-list:Ignore;">3.<span>=C2=A0</span></span></span><span
+          style=3D"color: rgb(0, 0, 0); font-size: 12pt;">'</span><span
+          style=3D"color: rgb(0, 0, 0); font-size: =
+12pt;">FaMAS</span><span
+          style=3D"color: rgb(0, 0, 0); font-size: 12pt;">'</span><span
+          style=3D"color: rgb(0, 0, 0); font-size: =
+12pt;">=C2=A0</span><span
+          style=3D"color: rgb(0, 0, 0); font-size: 12pt;">provided the
+          services as per the terms of engagement resulting into
+          transaction value estimate at EUR 7 Million for 26% of the
+          shares of Invictus</span><span
+          style=3D"color: rgb(0, 0, 0); font-size: 12pt;">. =
+H</span><span
+          style=3D"font-size: 12pt;">owever, </span><span
+          style=3D"color: rgb(0, 0, 0); font-size: 12pt;">you =
+</span><span
+          style=3D"color: rgb(0, 0, 0); font-size: =
+12pt;">neglected</span><span
+          style=3D"color: rgb(0, 0, 0); font-size: 12pt;">=C2=A0to =
+adhere to
+          the </span><span
+          style=3D"color: rgb(0, 0, 0); font-size: =
+12pt;">afore</span><span
+          style=3D"color: rgb(0, 0, 0); font-size: 12pt;">said payment
+          terms and have failed to </span><span
+          style=3D"color: rgb(0, 0, 0); font-size: 12pt;">make =
+</span><span
+          style=3D"color: rgb(0, 0, 0); font-size: 12pt;">payment =
+</span><span
+          style=3D"color: rgb(0, 0, 0); font-size: 12pt;">to =
+</span><span
+          style=3D"color: rgb(0, 0, 0); font-size: 12pt;">'</span><span
+          style=3D"color: rgb(0, 0, 0); font-size: =
+12pt;">FaMAS</span><span
+          style=3D"color: rgb(0, 0, 0); font-size: 12pt;">' </span><span
+          style=3D"color: rgb(0, 0, 0); font-size: 12pt;">and therefore =
+a
+          sum </span><span
+          style=3D"color: rgb(0, 0, 0); font-size: 12pt;">of =
+</span><span
+          style=3D"color: rgb(0, 0, 0); font-size: =
+12pt;">EUR2,45,000.00</span><span
+          style=3D"color: rgb(0, 0, 0); font-size: =
+12pt;">=C2=A0[</span><span
+          style=3D"color: rgb(0, 0, 0); font-size: =
+12pt;">Euro</span><span
+          style=3D"color: rgb(0, 0, 0); font-size: =
+12pt;">=C2=A0</span><span
+          style=3D"color: rgb(0, 0, 0); font-size: 12pt;">Two Lakh
+          Forty-Five Thousand</span><span
+          style=3D"color: rgb(0, 0, 0); font-size: =
+12pt;">=C2=A0Only]</span><span
+          style=3D"color: rgb(0, 0, 0); font-size: =
+12pt;">=C2=A0</span><span
+          style=3D"color: rgb(0, 0, 0); font-size: 12pt;">has remained
+          payable by you to </span><span
+          style=3D"color: rgb(0, 0, 0); font-size: 12pt;">'</span><span
+          style=3D"color: rgb(0, 0, 0); font-size: =
+12pt;">FaMAS</span><span
+          style=3D"color: rgb(0, 0, 0); font-size: 12pt;">'</span><span
+          style=3D"color: rgb(0, 0, 0); font-size: 12pt;">. </span><span
+          style=3D"font-size: 12pt;">Details of the </span><span
+          style=3D"font-size: 12pt;">unpaid </span><span
+          style=3D"font-size: 12pt;">I</span><span
+          style=3D"font-size: 12pt;">nvoices</span><span
+          style=3D"font-size: 12pt;">=C2=A0</span><span
+          style=3D"font-size: 12pt;">/ outstanding </span><span
+          style=3D"font-size: 12pt;">are as under:-</span><span
+          style=3D"font-size: 12pt;"></span></font></p>
+    <p class=3D"p"
+style=3D"margin-top:0.0000pt;margin-right:0.0000pt;margin-bottom:0.0000pt=
+;
+mso-para-margin-right:0.0000gd;text-autospace:ideograph-numeric;mso-pagin=
+ation:widow-orphan;
+text-align:justify;text-justify:inter-ideograph;" =
+align=3D"justify"><font
+        face=3D"Times New Roman, Times, serif"><span
+          style=3D"font-size: 12pt;">=C2=A0</span></font></p>
+    <table class=3D"MsoNormalTable"
+style=3D"border-collapse: collapse; margin-left: 4.65pt; border: medium =
+none;"
+      width=3D"633" height=3D"40" cellspacing=3D"0" border=3D"0">
+      <tbody>
+        <tr style=3D"height:15.0000pt;">
+          <td
+style=3D"width:48.0000pt;padding:0.7500pt 0.7500pt 0.0000pt 0.7500pt =
+;border-left:1.0000pt solid rgb(0,0,0);
+mso-border-left-alt:0.5000pt solid rgb(0,0,0);border-right:1.0000pt =
+solid rgb(0,0,0);mso-border-right-alt:0.5000pt solid rgb(0,0,0);
+border-top:1.0000pt solid rgb(0,0,0);mso-border-top-alt:0.5000pt solid =
+rgb(0,0,0);border-bottom:1.0000pt solid rgb(0,0,0);
+mso-border-bottom-alt:0.5000pt solid rgb(0,0,0);" width=3D"64"
+            valign=3D"center" nowrap=3D"nowrap">
+            <p class=3D"MsoNormal"
+style=3D"mso-pagination:widow-orphan;text-align:center;vertical-align:mid=
+dle;"
+              align=3D"center"><font face=3D"Times New Roman, Times, =
+serif"><b
+                  style=3D"mso-bidi-font-weight:normal"><span
+                    style=3D"color: rgb(0, 0, 0); font-size: =
+12pt;">S.No</span></b><b
+                  style=3D"mso-bidi-font-weight:normal"><span
+                    style=3D"color: rgb(0, 0, 0); font-size: =
+12pt;"></span></b></font></p>
+          </td>
+          <td
+style=3D"width:120.9000pt;padding:0.7500pt 0.7500pt 0.0000pt 0.7500pt =
+;border-left:none;
+mso-border-left-alt:none;border-right:1.0000pt solid =
+rgb(0,0,0);mso-border-right-alt:0.5000pt solid rgb(0,0,0);
+border-top:1.0000pt solid rgb(0,0,0);mso-border-top-alt:0.5000pt solid =
+rgb(0,0,0);border-bottom:1.0000pt solid rgb(0,0,0);
+mso-border-bottom-alt:0.5000pt solid rgb(0,0,0);" width=3D"161"
+            valign=3D"center" nowrap=3D"nowrap">
+            <p class=3D"MsoNormal"
+style=3D"mso-pagination:widow-orphan;text-align:center;vertical-align:mid=
+dle;"
+              align=3D"center"><font face=3D"Times New Roman, Times, =
+serif"><b
+                  style=3D"mso-bidi-font-weight:normal"><span
+                    style=3D"color: rgb(0, 0, 0); font-size: =
+12pt;">Invoice
+                    No.</span></b><b =
+style=3D"mso-bidi-font-weight:normal"><span
+                    style=3D"color: rgb(0, 0, 0); font-size: =
+12pt;"></span></b></font></p>
+          </td>
+          <td
+style=3D"width:78.0000pt;padding:0.7500pt 0.7500pt 0.0000pt 0.7500pt =
+;border-left:none;
+mso-border-left-alt:none;border-right:1.0000pt solid =
+rgb(0,0,0);mso-border-right-alt:0.5000pt solid rgb(0,0,0);
+border-top:1.0000pt solid rgb(0,0,0);mso-border-top-alt:0.5000pt solid =
+rgb(0,0,0);border-bottom:1.0000pt solid rgb(0,0,0);
+mso-border-bottom-alt:0.5000pt solid rgb(0,0,0);" width=3D"104"
+            valign=3D"center" nowrap=3D"nowrap">
+            <p class=3D"MsoNormal"
+style=3D"mso-pagination:widow-orphan;text-align:center;vertical-align:mid=
+dle;"
+              align=3D"center"><font face=3D"Times New Roman, Times, =
+serif"><b
+                  style=3D"mso-bidi-font-weight:normal"><span
+                    style=3D"color: rgb(0, 0, 0); font-size: =
+12pt;">Invoice</span></b><b
+                  style=3D"mso-bidi-font-weight:normal"><span
+                    style=3D"color: rgb(0, 0, 0); font-size: =
+12pt;"><span
+                      =
+style=3D"mso-spacerun:'yes';">=C2=A0</span>Date</span></b><b
+                  style=3D"mso-bidi-font-weight:normal"><span
+                    style=3D"color: rgb(0, 0, 0); font-size: =
+12pt;"></span></b></font></p>
+          </td>
+          <td
+style=3D"width:133.5000pt;padding:0.7500pt 0.7500pt 0.0000pt 0.7500pt =
+;border-left:none;
+mso-border-left-alt:none;border-right:1.0000pt solid =
+rgb(0,0,0);mso-border-right-alt:0.5000pt solid rgb(0,0,0);
+border-top:1.0000pt solid rgb(0,0,0);mso-border-top-alt:0.5000pt solid =
+rgb(0,0,0);border-bottom:1.0000pt solid rgb(0,0,0);
+mso-border-bottom-alt:0.5000pt solid rgb(0,0,0);" width=3D"178"
+            valign=3D"center" nowrap=3D"nowrap">
+            <p class=3D"MsoNormal"
+style=3D"mso-pagination:widow-orphan;text-align:right;vertical-align:midd=
+le;"
+              align=3D"right"><font face=3D"Times New Roman, Times, =
+serif"><b
+                  style=3D"mso-bidi-font-weight:normal"><span
+                    style=3D"color: rgb(0, 0, 0); font-size: =
+12pt;">Invoice
+                    Amount (EUR)</span></b><b
+                  style=3D"mso-bidi-font-weight:normal"><span
+                    style=3D"color: rgb(0, 0, 0); font-size: =
+12pt;"></span></b></font></p>
+          </td>
+        </tr>
+        <tr style=3D"height:15.0000pt;">
+          <td
+style=3D"padding:0.7500pt 0.7500pt 0.0000pt 0.7500pt =
+;border-left:1.0000pt solid rgb(0,0,0);mso-border-left-alt:0.5000pt =
+solid rgb(0,0,0);
+border-right:1.0000pt solid rgb(0,0,0);mso-border-right-alt:0.5000pt =
+solid rgb(0,0,0);border-top:none;
+mso-border-top-alt:0.5000pt solid rgb(0,0,0);border-bottom:1.0000pt =
+solid rgb(0,0,0);mso-border-bottom-alt:0.5000pt solid rgb(0,0,0);"
+            valign=3D"center" nowrap=3D"nowrap">
+            <p class=3D"MsoNormal"
+style=3D"mso-pagination:widow-orphan;text-align:center;vertical-align:mid=
+dle;"
+              align=3D"center"><font face=3D"Times New Roman, Times, =
+serif"><span
+                  style=3D"color: rgb(0, 0, 0); font-size: =
+12pt;">1</span><span
+                  style=3D"color: rgb(0, 0, 0); font-size: =
+12pt;"></span></font></p>
+          </td>
+          <td
+style=3D"padding:0.7500pt 0.7500pt 0.0000pt 0.7500pt =
+;border-left:none;mso-border-left-alt:none;
+border-right:1.0000pt solid rgb(0,0,0);mso-border-right-alt:0.5000pt =
+solid rgb(0,0,0);border-top:none;
+mso-border-top-alt:0.5000pt solid rgb(0,0,0);border-bottom:1.0000pt =
+solid rgb(0,0,0);mso-border-bottom-alt:0.5000pt solid rgb(0,0,0);"
+            valign=3D"center" nowrap=3D"nowrap">
+            <p class=3D"MsoNormal"
+style=3D"mso-pagination:widow-orphan;text-align:center;vertical-align:mid=
+dle;"
+              align=3D"center"><font face=3D"Times New Roman, Times, =
+serif"><span
+                  style=3D"color: rgb(0, 0, 0); font-size: =
+12pt;">ELSA10/2023</span><span
+                  style=3D"color: rgb(0, 0, 0); font-size: =
+12pt;"></span></font></p>
+          </td>
+          <td
+style=3D"padding:0.7500pt 0.7500pt 0.0000pt 0.7500pt =
+;border-left:none;mso-border-left-alt:none;
+border-right:1.0000pt solid rgb(0,0,0);mso-border-right-alt:0.5000pt =
+solid rgb(0,0,0);border-top:none;
+mso-border-top-alt:0.5000pt solid rgb(0,0,0);border-bottom:1.0000pt =
+solid rgb(0,0,0);mso-border-bottom-alt:0.5000pt solid rgb(0,0,0);"
+            valign=3D"center" nowrap=3D"nowrap">
+            <p class=3D"MsoNormal"
+style=3D"mso-pagination:widow-orphan;text-align:center;vertical-align:mid=
+dle;"
+              align=3D"center"><font face=3D"Times New Roman, Times, =
+serif"><span
+                  style=3D"color: rgb(0, 0, 0); font-size: =
+12pt;">27.10.2023</span><span
+                  style=3D"color: rgb(0, 0, 0); font-size: =
+12pt;"></span></font></p>
+          </td>
+          <td
+style=3D"padding:0.7500pt 0.7500pt 0.0000pt 0.7500pt =
+;border-left:none;mso-border-left-alt:none;
+border-right:1.0000pt solid rgb(0,0,0);mso-border-right-alt:0.5000pt =
+solid rgb(0,0,0);border-top:none;
+mso-border-top-alt:0.5000pt solid rgb(0,0,0);border-bottom:1.0000pt =
+solid rgb(0,0,0);mso-border-bottom-alt:0.5000pt solid rgb(0,0,0);"
+            valign=3D"center" nowrap=3D"nowrap">
+            <p class=3D"MsoNormal"
+style=3D"mso-pagination:widow-orphan;text-align:right;vertical-align:midd=
+le;"
+              align=3D"right"><font face=3D"Times New Roman, Times, =
+serif"><b
+                  style=3D"mso-bidi-font-weight:normal"><u><span
+style=3D"color: rgb(0, 0, 0); text-decoration: underline; font-size: =
+12pt;">2,45,000.00</span></u></b><span
+                  style=3D"color: rgb(0, 0, 0); font-size: =
+12pt;"></span></font></p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p class=3D"p"
+style=3D"margin-top:0.0000pt;margin-right:0.0000pt;margin-bottom:0.0000pt=
+;
+mso-para-margin-right:0.0000gd;mso-para-margin-left:0.0000gd;text-autospa=
+ce:ideograph-numeric;
+mso-pagination:widow-orphan;text-align:justify;text-justify:inter-ideogra=
+ph;"
+      align=3D"justify"><font face=3D"Times New Roman, Times, =
+serif"><span
+          style=3D"font-size: 12pt;">=C2=A0</span></font></p>
+    <p class=3D"p"
+style=3D"margin-top:0.0000pt;margin-right:0.0000pt;margin-bottom:0.0000pt=
+;
+margin-left:21.2500pt;mso-para-margin-left:0.0000gd;text-indent:-21.2500p=
+t;
+mso-char-indent-count:0.0000;text-autospace:ideograph-numeric;mso-paginat=
+ion:widow-orphan;
+text-align:justify;text-justify:inter-ideograph;mso-list:l0 level1 =
+lfo1;"
+      align=3D"justify"><font face=3D"Times New Roman, Times, =
+serif"><span
+          style=3D"font-size: 12pt;"><span =
+style=3D"mso-list:Ignore;">4.<span>=C2=A0</span></span></span><span
+          style=3D"font-size: 12pt;">You are, therefore, requested to
+          kindly look into the matter and ensure to make payment of =
+</span><span
+          style=3D"font-size: 12pt;">EUR2,45,000.00</span><span
+          style=3D"font-size: 12pt;">=C2=A0[</span><span
+          style=3D"font-size: 12pt;">Euro</span><span
+          style=3D"font-size: 12pt;">=C2=A0</span><span
+          style=3D"font-size: 12pt;">Two Lakh Forty-Five =
+Thousand</span><span
+          style=3D"font-size: 12pt;">=C2=A0Only]</span><span
+          style=3D"font-size: 12pt;">=C2=A0to '</span><span
+          style=3D"font-size: 12pt;">FaMAS</span><span
+          style=3D"font-size: 12pt;">'</span><span
+          style=3D"font-size: 12pt;">.</span><span
+          style=3D"font-size: 12pt;">=C2=A0</span><span
+          style=3D"font-size: 12pt;">A</span><span
+          style=3D"font-size: 12pt;">lternatively</span><span
+          style=3D"font-size: 12pt;">,</span><span
+          style=3D"font-size: 12pt;">=C2=A0provide reasons for =
+non-payment</span><span
+          style=3D"font-size: 12pt;">.</span><span
+          style=3D"font-size: 12pt;"></span></font></p>
+    <p class=3D"p"
+style=3D"margin-top:0.0000pt;margin-right:0.0000pt;margin-bottom:0.0000pt=
+;
+mso-para-margin-right:0.0000gd;mso-para-margin-left:0.0000gd;text-autospa=
+ce:ideograph-numeric;
+mso-pagination:widow-orphan;text-align:justify;text-justify:inter-ideogra=
+ph;"
+      align=3D"justify"><font face=3D"Times New Roman, Times, =
+serif"><span
+          style=3D"font-size: 12pt;">=C2=A0</span></font></p>
+    <p class=3D"p"
+style=3D"margin-top:0.0000pt;margin-right:0.0000pt;margin-bottom:0.0000pt=
+;
+margin-left:21.2500pt;mso-para-margin-left:0.0000gd;text-indent:-21.2500p=
+t;
+mso-char-indent-count:0.0000;text-autospace:ideograph-numeric;mso-paginat=
+ion:widow-orphan;
+text-align:justify;text-justify:inter-ideograph;mso-list:l0 level1 =
+lfo1;"
+      align=3D"justify"><font face=3D"Times New Roman, Times, =
+serif"><span
+          style=3D"font-size: 12pt;"><span =
+style=3D"mso-list:Ignore;">5.<span>=C2=A0</span></span></span><span
+          style=3D"font-size: 12pt;">This is without prejudice to other
+          rights and remedies of '</span><span style=3D"font-size: =
+12pt;">FaMAS</span><span
+          style=3D"font-size: 12pt;">' against you.</span><span
+          style=3D"font-size: 12pt;"></span></font></p>
+    <div class=3D"moz-signature"><font
+        face=3D"Times New Roman, Times, serif"><br>
+      </font></div>
+    <div class=3D"moz-signature"><font
+        face=3D"Times New Roman, Times, serif">-- <br>
+      </font>
+      <meta http-equiv=3D"content-type" content=3D"text/html; =
+charset=3DUTF-8">
+      <div class=3D"moz-forward-container"><font
+          face=3D"Times New Roman, Times, serif"><span
+style=3D"mso-spacerun:'yes';font-family:'Times New
+              Roman';mso-fareast-font-family:SimSun;
+              =
+color:rgb(0,0,0);letter-spacing:0.0000pt;font-weight:normal;
+              text-transform:none;font-style:normal;font-size:12.0000pt;
+              mso-font-kerning:0.0000pt;">Regards,</span><span
+style=3D"mso-spacerun:'yes';font-family:'Times New
+              Roman';mso-fareast-font-family:SimSun;
+              =
+color:rgb(0,0,0);letter-spacing:0.0000pt;font-weight:normal;
+              text-transform:none;font-style:normal;font-size:13.5000pt;
+              mso-font-kerning:0.0000pt;"><o:p></o:p></span></font>
+        <div class=3D"moz-signature">
+          <div class=3D"Section0" style=3D"layout-grid:18.0000pt;">
+            <p class=3D"p"
+style=3D"margin-top:5.0000pt;margin-right:0.0000pt;margin-bottom:5.0000pt=
+;
+            =
+margin-left:0.0000pt;text-indent:0.0000pt;mso-pagination:widow-orphan;
+
+            text-align:left;"><font face=3D"Times New Roman, Times, =
+serif"><b><span
+style=3D"mso-spacerun:'yes';font-family:'Times New
+                Roman';mso-fareast-font-family:SimSun;
+                =
+color:rgb(0,0,0);letter-spacing:0.0000pt;font-weight:bold;
+                =
+text-transform:none;font-style:normal;font-size:12.0000pt;
+
+                mso-font-kerning:0.0000pt;">T.Mohakud =
+(Advocate)</span></b></font></p>
+            <font face=3D"Times New Roman, Times, serif"><b><span
+style=3D"mso-spacerun:'yes';font-family:'Times New
+                Roman';mso-fareast-font-family:SimSun;
+                =
+color:rgb(0,0,0);letter-spacing:0.0000pt;font-weight:bold;
+                =
+text-transform:none;font-style:normal;font-size:12.0000pt;
+
+                mso-font-kerning:0.0000pt;"><br>
+                </span></b></font></div>
+          <div class=3D"Section0" style=3D"layout-grid:18.0000pt;"><font
+              face=3D"Times New Roman, Times, serif"><b><span
+style=3D"mso-spacerun:'yes';font-family:'Times New
+                Roman';mso-fareast-font-family:SimSun;
+                =
+color:rgb(0,0,0);letter-spacing:0.0000pt;font-weight:bold;
+                =
+text-transform:none;font-style:normal;font-size:12.0000pt;
+
+                mso-font-kerning:0.0000pt;">K &amp; P Law =
+Associates</span></b><span
+style=3D"mso-spacerun:'yes';font-family:'Times New
+              Roman';mso-fareast-font-family:SimSun;
+color:rgb(0,0,0);letter-spacing:0.0000pt;text-transform:none;
+font-style:normal;font-size:13.5000pt;mso-font-kerning:0.0000pt;"><o:p></=
+o:p></span></font>
+            <p class=3D"p"
+style=3D"margin-top:5.0000pt;margin-right:0.0000pt;margin-bottom:5.0000pt=
+;
+            =
+margin-left:0.0000pt;text-indent:0.0000pt;mso-pagination:widow-orphan;
+
+            text-align:left;"><font face=3D"Times New Roman, Times, =
+serif"><b><span
+style=3D"mso-spacerun:'yes';font-family:'Times New
+                Roman';mso-fareast-font-family:SimSun;
+                =
+color:rgb(0,0,0);letter-spacing:0.0000pt;font-weight:bold;
+                =
+text-transform:none;font-style:normal;font-size:12.0000pt;
+
+                mso-font-kerning:0.0000pt;"># 907, DLF Tower A, Jasola
+                    District Center</span></b></font></p>
+            <p class=3D"p"
+style=3D"margin-top:5.0000pt;margin-right:0.0000pt;margin-bottom:5.0000pt=
+;
+            =
+margin-left:0.0000pt;text-indent:0.0000pt;mso-pagination:widow-orphan;
+
+            text-align:left;"><font face=3D"Times New Roman, Times, =
+serif"><b><span
+style=3D"mso-spacerun:'yes';font-family:'Times New
+                Roman';mso-fareast-font-family:SimSun;
+                =
+color:rgb(0,0,0);letter-spacing:0.0000pt;font-weight:bold;
+                =
+text-transform:none;font-style:normal;font-size:12.0000pt;
+
+                mso-font-kerning:0.0000pt;">New Delhi - 110025, =
+INDIA</span></b><span
+style=3D"mso-spacerun:'yes';font-family:'Times New
+              Roman';mso-fareast-font-family:SimSun;
+color:rgb(0,0,0);letter-spacing:0.0000pt;text-transform:none;
+font-style:normal;font-size:13.5000pt;mso-font-kerning:0.0000pt;"><o:p></=
+o:p></span></font></p>
+            <p class=3D"p"
+style=3D"margin-top:5.0000pt;margin-right:0.0000pt;margin-bottom:5.0000pt=
+;
+            =
+margin-left:0.0000pt;text-indent:0.0000pt;mso-pagination:widow-orphan;
+
+            text-align:left;"><font face=3D"Times New Roman, Times, =
+serif"><b><span
+style=3D"mso-spacerun:'yes';font-family:'Times New
+                Roman';mso-fareast-font-family:SimSun;
+                =
+color:rgb(0,0,0);letter-spacing:0.0000pt;font-weight:bold;
+                =
+text-transform:none;font-style:normal;font-size:12.0000pt;
+
+                mso-font-kerning:0.0000pt;">Tel : +91-11- 2694 =
+0576/77</span></b></font></p>
+            <p class=3D"p"
+style=3D"margin-top:5.0000pt;margin-right:0.0000pt;margin-bottom:5.0000pt=
+;
+            =
+margin-left:0.0000pt;text-indent:0.0000pt;mso-pagination:widow-orphan;
+
+            text-align:left;"><font face=3D"Times New Roman, Times, =
+serif"><b><span
+style=3D"mso-spacerun:'yes';font-family:'Times New
+                Roman';mso-fareast-font-family:SimSun;
+                =
+color:rgb(0,0,0);letter-spacing:0.0000pt;font-weight:bold;
+                =
+text-transform:none;font-style:normal;font-size:12.0000pt;
+
+                mso-font-kerning:0.0000pt;">Mob : </span><span
+                    style=3D"color:black">+91-74286 =
+97538</span></b></font><span
+style=3D"mso-spacerun:'yes';font-family:'Times New
+              Roman';mso-fareast-font-family:SimSun;
+color:rgb(0,0,0);letter-spacing:0.0000pt;text-transform:none;
+font-style:normal;font-size:13.5000pt;mso-font-kerning:0.0000pt;"><o:p></=
+o:p></span></p>
+          </div>
+        </div>
+        <br>
+      </div>
+    </div>
+  </body>
+</html>
+
+------=_NextPart_000_027D_01DC1E88.2BD11320--

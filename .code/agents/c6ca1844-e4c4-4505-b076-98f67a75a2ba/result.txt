@@ -1,0 +1,110 @@
+Of course. Here is a detailed, phased engineering plan to deliver the Block 0a MVP and prepare for Block 1 integration.
+
+First, I will analyze the current state of the key files to ensure the plan is grounded in the existing implementation.
+Here is the comprehensive engineering plan for Block 0a.
+
+### **FirstDraft v2.0: Block 0a (MVP) Engineering Plan**
+
+This plan details the work required to move the Block 0a document pre-processing service from its current scaffolded state to a production-ready MVP. It is divided into three two-week sprints, followed by a summary timeline and an immediate action list.
+
+---
+
+### **Phase 1: Core Pipeline Implementation (Weeks 1-2)**
+
+**Goal:** Achieve a functional end-to-end document processing pipeline for English PDFs.
+**Owner/Skills:** Backend Engineer, DevOps.
+**Artifacts:** Functional API and worker, basic unit tests, updated `docker-compose.yml` with necessary dependencies.
+
+| Task ID | Task Description | Acceptance Criteria | Key Files/Components |
+| :--- | :--- | :--- | :--- |
+| **P1-T1** | **Setup Worker Environment** | Add `ocrmypdf` (which includes Tesseract), `opencv-python-headless`, and `Pillow` to the worker's dependencies. Update `infra/dockerfiles/Dockerfile.worker`. | `requirements.txt`, `infra/dockerfiles/Dockerfile.worker` |
+| **P1-T2** | **Implement Image Normalization** | Create a `normalize_page()` function in the worker that takes an image, detects skew (`opencv`), and corrects it. Handles PDF-to-image conversion. | `apps/block0_worker/worker.py` |
+| **P1-T3** | **Implement OCR Adapter** | Create a simple OCR adapter that uses `ocrmypdf` to process a normalized image or PDF file. The adapter should output structured data (text, confidence). | `apps/block0_worker/ocr.py` (new), `worker.py` |
+| **P1-T4** | **Integrate Pipeline Steps** | Update `enqueue_process_document` task in `worker.py` to call the full sequence: `normalize` → `ocr` → `quality` → `finalize`. | `apps/block0_worker/worker.py` |
+| **P1-T5** | **Persist OCR & Metrics** | The `finalize` step must: 1. Save structured OCR text to a new S3 object. 2. Update `DocumentVersion` with the `ocr_text_uri`. 3. Populate basic metrics (e.g., `page_count`) in `DocumentVersion.metrics`. 4. Update `ProcessingJob` status to `succeeded` or `failed`. | `shared/db/models.py`, `apps/block0_worker/worker.py` |
+| **P1-T6** | **Basic Unit Tests** | Add unit tests for the normalization function and the OCR adapter, mocking external processes. | `tests/worker/` (new folder) |
+
+---
+
+### **Phase 2: Hardening, Language Support & Observability (Weeks 3-4)**
+
+**Goal:** Enhance robustness, add Hindi language support, implement structured logging, and refine the credit system.
+**Owner/Skills:** Backend Engineer, SRE/DevOps.
+**Artifacts:** Integration test suite, structured logs, refined credit logic, Hindi OCR capability.
+
+| Task ID | Task Description | Acceptance Criteria | Key Files/Components |
+| :--- | :--- | :--- | :--- |
+| **P2-T1** | **Add Hindi Language Support** | Install Hindi Tesseract language packs (`hin`) in the worker Dockerfile. Modify the OCR adapter to accept a language parameter. Update the API to accept `language` on upload. | `infra/dockerfiles/Dockerfile.worker`, `apps/block0_worker/ocr.py`, `apps/block0_api/main.py` |
+| **P2-T2** | **Implement Quality Metrics** | Expand `shared/quality/metrics.py` to calculate and return page-level metrics: `dpi`, `blur_score`, `skew_angle`, `ocr_confidence`, and `language_mix`. | `shared/quality/metrics.py`, `apps/block0_worker/worker.py` |
+| **P2-T3** | **Refine Credit Calculation** | Update the `finalize` step in the worker to calculate `actual_credits` based on pages processed and models used. Insert a new `Credit` row with `is_estimate=False`. | `apps/block0_worker/worker.py`, `shared/db/models.py` |
+| **P2-T4** | **Structured Logging** | Integrate `structlog`. Add a middleware to `main.py` to create a `correlation_id` for each request and pass it to the Celery worker for unified log tracing. | `apps/block0_api/main.py`, `apps/block0_worker/worker.py`, `shared/` |
+| **P2-T5** | **Idempotent Job Design** | Make the Celery task idempotent. On start, the worker should check the `ProcessingJob` status. If it's already `succeeded`, exit gracefully. This prevents re-processing on retries. | `apps/block0_worker/worker.py` |
+| **P2-T6** | **Integration & Golden Doc Tests** | Create an integration test that uploads a "golden" PDF (e.g., a slightly skewed, multi-page English document), polls the job status API, and verifies the final metrics and report content. | `tests/integration/` (new folder) |
+
+---
+
+### **Phase 3: Security, Block 1 Handoff & MVP Polish (Weeks 5-6)**
+
+**Goal:** Secure the application, define a clean interface for Block 1, and prepare for a limited production rollout.
+**Owner/Skills:** Backend Engineer, Security Specialist.
+**Artifacts:** Updated API documentation, defined Block 1 interface, security review checklist completed.
+
+| Task ID | Task Description | Acceptance Criteria | Key Files/Components |
+| :--- | :--- | :--- | :--- |
+| **P3-T1** | **DB Schema Refinements & Indexes** | Add a `cases` table (`id`, `tenant_id`, `name`). Add a nullable `case_id` FK to the `documents` table. Add DB indexes to `processing_jobs(status)` and foreign keys for performance. Generate a new Alembic migration. | `shared/db/models.py`, `alembic/versions/` |
+| **P3-T2** | **Define Block 1 Interface** | Upon successful completion, the Block 0 worker will publish a message to a dedicated Redis queue (e.g., `block1_inbound_queue`). The message will contain `job_id`, `document_id`, and `ocr_text_uri`. This decouples the blocks. | `apps/block0_worker/worker.py` |
+| **P3-T3** | **Secrets Management Strategy** | Formalize secrets handling. For production, use environment variables injected via a secrets manager (e.g., AWS Secrets Manager, Vault). Document all required variables in `RUNBOOK.md`. | `RUNBOOK.md`, `infra/docker-compose.yml` |
+| **P3-T4** | **Tenant Isolation Enforcement** | Refactor DB access in `apps/block0_api/main.py` to ensure every query is filtered by `tenant_id`. This can be done via a dependency-injected session or by explicitly adding filters. | `apps/block0_api/main.py`, `shared/db/session.py` |
+| **P3-T5** | **API Hardening & Health Check** | Add a `/health` endpoint to the API for readiness/liveness probes. Implement request validation using Pydantic models more strictly. Update `API.md`. | `apps/block0_api/main.py`, `API.md` |
+| **P3-T6** | **Performance Smoke Test** | Create a script to upload N documents concurrently to establish a baseline for processing throughput (docs/hour). | `scripts/perf_test.py` (new) |
+
+---
+
+### **Gantt-Style Timeline**
+
+```
+Phase 1: Core Pipeline (Weeks 1-2)
+| Task  | W1 | W2 |
+|-------|----|----|
+| P1-T1 | ██ |    |
+| P1-T2 | ██ | ██ |
+| P1-T3 | ██ | ██ |
+| P1-T4 |    | ██ |
+| P1-T5 |    | ██ |
+| P1-T6 |    | ██ |
+
+Phase 2: Hardening (Weeks 3-4)
+| Task  | W3 | W4 |
+|-------|----|----|
+| P2-T1 | ██ |    |
+| P2-T2 | ██ | ██ |
+| P2-T3 | ██ |    |
+| P2-T4 | ██ | ██ |
+| P2-T5 |    | ██ |
+| P2-T6 |    | ██ |
+
+Phase 3: Handoff & Polish (Weeks 5-6)
+| Task  | W5 | W6 |
+|-------|----|----|
+| P3-T1 | ██ |    |
+| P3-T2 | ██ |    |
+| P3-T3 | ██ | ██ |
+| P3-T4 | ██ |    |
+| P3-T5 |    | ██ |
+| P3-T6 |    | ██ |
+```
+
+---
+
+### **Top 10 Punch List for Day 1**
+
+1.  **Task P1-T1:** Create a feature branch. Add `ocrmypdf`, `opencv-python-headless`, `Pillow` to `requirements.txt`.
+2.  **Task P1-T1:** Rebuild the worker Docker image (`docker-compose build block0_worker`) to confirm dependencies install correctly.
+3.  **Task P1-T2:** Create a new file `apps/block0_worker/normalization.py` and stub out the main function.
+4.  **Task P1-T3:** Create a new file `apps/block0_worker/ocr.py` and write the adapter interface.
+5.  **Task P1-T6:** Set up the `tests/worker` directory with a `__init__.py` and a `test_normalization.py`.
+6.  **Task P2-T4:** Choose and add a structured logging library (`structlog` is recommended) to `requirements.txt`.
+7.  **Task P3-T1:** Draft the Alembic migration for adding the `cases` table and new indexes.
+8.  **Review `shared/storage/s3.py`:** Confirm the object key schema is suitable for storing processed outputs.
+9.  **Review `scripts/bootstrap_dev.py`:** Check if it needs updates for new DB models (e.g., `Case`).
+10. **Whiteboard Session:** Sketch the data flow for the Block 1 handoff message queue.

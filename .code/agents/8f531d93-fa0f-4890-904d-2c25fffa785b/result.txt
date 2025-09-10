@@ -1,0 +1,558 @@
+[2025-09-10T15:26:28] Code v0.2.112
+--------
+workdir: /home/aksingh/code_test
+model: gpt-5
+provider: openai
+approval: never
+sandbox: danger-full-access
+reasoning effort: medium
+reasoning summaries: auto
+--------
+[2025-09-10T15:26:28] User instructions:
+Context: Goal: Deliver a concrete, engineering-led plan to take the scaffolded Block 0a to a production-ready MVP and prepare clean interfaces for Block 1.
+Repo root: /home/aksingh/code_test
+Assumptions: Single-node dev via docker-compose; later K8s. India-first docs mix (eng/hin). Keep cost low; accuracy > speed.
+Please reference file paths exactly as shown so humans can open them quickly.
+
+
+Agent: You are one of three parallel planners tasked with producing a comprehensive, actionable implementation plan for FirstDraft v2.0 Block 0a (Document Pre-processing) and immediate next steps through early Block 1 integration, based on the provided PRD/ADR and repo scaffold. Deliver a crisp, phased plan with milestones, architecture details, risks/mitigations, and concrete tasks. DO NOT modify files; this is planning only.
+
+Context summary (product + architecture):
+- Vision: Foundation-first "AI Paralegal" for Indian legal market; MVP = Block 0a (pre-processing) + Block 1 (entity discovery) with credit-based transparency; never reject, always warn.
+- Tech stack: FastAPI + Celery/Redis + Postgres + S3/MinIO; Docker Compose dev; UV planned but current scaffold uses requirements.txt; centralized LLM router planned (ADR-0014); per-tenant DB (system DB now), integer users with FK; content-addressed storage.
+- Quality: OCR + normalization (skew/rotation/contrast/denoise), Hindi/English OCR, page-level metrics (dpi/blur/skew/ocr_conf/lang mix), warning-only UX.
+- Credits: estimate pre-run; finalize post-run; budget vs recommended model switch to affect estimates.
+
+Current repo snapshot (high level):
+- Infra: docker-compose for postgres, redis, minio, api, worker; Dockerfiles for api/worker.
+- API: /v0/documents/upload (tenant_id,user_id,files,[quality_mode]), /v0/jobs/{id}, /v0/documents/{id}/report.{json|md}
+- Worker: Celery pipeline stub normalize→ocr→quality→finalize; credits estimate stub; no real OCR yet.
+- Storage: MinIO client wrapper + content-addressed keying.
+- DB: tenants, users, documents, document_versions, processing_jobs, credits; Alembic init migration.
+- Scripts: bootstrap_dev creates a default tenant and two users (Amit, Claude).
+
+Directory structure (depth<=3):
+.
+├─ alembic/ (env.py, versions/..._init.py)
+├─ apps/
+│  ├─ block0_api/main.py  ← FastAPI endpoints
+│  └─ block0_worker/worker.py  ← Celery task (stubs)
+├─ infra/
+│  ├─ docker-compose.yml
+│  └─ dockerfiles/{Dockerfile.api,Dockerfile.worker}
+├─ shared/
+│  ├─ db/{models.py,session.py}
+│  ├─ storage/s3.py
+│  ├─ quality/metrics.py (stub metrics + credit estimate)
+│  └─ llm_service/router.py (placeholder)
+├─ scripts/bootstrap_dev.py
+├─ PRD.md, ADR.md, API.md, RUNBOOK.md, README.md, requirements.txt
+
+Key files to glance (for context):
+- apps/block0_api/main.py → endpoints, object storage usage, job creation, credit estimate stub
+- shared/db/models.py → schema (tenants/users/documents/document_versions/processing_jobs/credits)
+
+What to produce (deliverables):
+1) A 6–8 week plan split into 2–3 sprints: Block 0a functional parity (OCR + metrics) then hardening + Block 1 handoff hooks.
+2) Detailed design choices: OCR adapter strategy (tesseract/ocrmypdf initially, paddle/cloud as feature-flag), image normalization pipeline (opencv/pillow), language handling (eng+hin), content-addressed storage layout, idempotent job design (page-chunking, retries), DB schema refinements (cases, ocr_text object URIs, indexes), API adjustments (health, presigned uploads optional), and credits logic.
+3) Test strategy: unit (adapters/metrics), integration (upload→process→report), golden docs, performance smoke (N pages/hour), and fixtures.
+4) Observability & ops: structured logging, request/job correlation IDs, metrics (task durations, queue depth), basic dashboards.
+5) Security & privacy: per-tenant isolation practices, secret handling (env for dev, path to cloud secrets), PII handling, signed URLs for objects.
+6) Risks & mitigations with concrete fallbacks, plus staged rollout and success criteria.
+
+Format: Provide numbered phases with explicit tasks, owners/skills needed, acceptance criteria, and expected artifacts per phase. Conclude with a concise Gantt-style timeline (text), and a top-10 punch list for Day 1 execution.
+
+
+Desired output: A detailed, phased plan with milestones, risks, and artifacts.
+
+Files to consider: apps/block0_api/main.py, shared/db/models.py
+
+[Running in read-only mode - no modifications allowed]
+[2025-09-10T15:27:00] ERROR: stream error: stream disconnected before completion: Transport error: error decoding response body; retrying 1/5 in 195ms…
+[2025-09-10T15:27:10] codex
+
+Glancing at the API and DB models to align the plan details and interfaces.
+[2025-09-10T15:27:12] exec bash -lc 'ls -la' in /home/aksingh/code_test
+[2025-09-10T15:27:12] bash -lc 'ls -la' succeeded in 23ms:
+total 100
+drwxrwxr-x  7 aksingh aksingh  4096 Sep 10 20:53 .
+drwxr-x--- 35 aksingh aksingh  4096 Sep 10 20:56 ..
+-rw-rw-r--  1 aksingh aksingh 32305 Sep 10 07:14 ADR.md
+drwxrwxr-x  3 aksingh aksingh  4096 Sep 10 20:52 alembic
+-rw-rw-r--  1 aksingh aksingh   545 Sep 10 20:51 alembic.ini
+-rw-rw-r--  1 aksingh aksingh   670 Sep 10 20:49 API.md
+drwxrwxr-x  4 aksingh aksingh  4096 Sep 10 20:52 apps
+-rw-rw-r--  1 aksingh aksingh   534 Sep 10 20:48 .env.example
+drwxrwxr-x  3 aksingh aksingh  4096 Sep 10 20:49 infra
+-rw-rw-r--  1 aksingh aksingh 12696 Sep  7 13:38 PRD.md
+-rw-rw-r--  1 aksingh aksingh  1574 Sep 10 20:48 README.md
+-rw-rw-r--  1 aksingh aksingh   335 Sep 10 20:50 requirements.txt
+-rw-rw-r--  1 aksingh aksingh  1387 Sep 10 20:53 RUNBOOK.md
+drwxrwxr-x  2 aksingh aksingh  4096 Sep 10 20:53 scripts
+drwxrwxr-x  6 aksingh aksingh  4096 Sep 10 20:52 shared
+[2025-09-10T15:27:12] tokens used: 384
+[2025-09-10T15:27:16] exec bash -lc "sed -n '1,200p' apps/block0_api/main.py" in /home/aksingh/code_test
+[2025-09-10T15:27:16] bash -lc "sed -n '1,200p' apps/block0_api/main.py" succeeded in 22ms:
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException
+from fastapi.responses import JSONResponse, PlainTextResponse
+from typing import List, Optional
+import os
+import uuid
+
+from shared.db.session import SessionLocal
+from shared.db import models
+from shared.db.models import ProcessingStatus
+from shared.storage.s3 import Storage
+from shared.quality.metrics import estimate_credits
+from apps.block0_worker.worker import enqueue_process_document
+
+app = FastAPI(title="FirstDraft Block 0a API", version="0.1.0")
+
+
+def get_env_bool(name: str, default: bool = False) -> bool:
+    val = os.getenv(name)
+    if val is None:
+        return default
+[2025-09-10T15:27:16] tokens used: 632
+[2025-09-10T15:27:17] exec bash -lc "sed -n '1,240p' shared/db/models.py" in /home/aksingh/code_test
+[2025-09-10T15:27:17] bash -lc "sed -n '1,240p' shared/db/models.py" succeeded in 22ms:
+import uuid as _uuid
+from datetime import datetime
+from typing import Optional, List, Dict, Any
+from enum import Enum
+
+from sqlalchemy import (
+    Column, String, Integer, DateTime, ForeignKey, Boolean, Enum as SAEnum,
+    JSON, LargeBinary, Text
+)
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import declarative_base, relationship
+
+Base = declarative_base()
+
+
+class ProcessingStatus(str, Enum):
+    queued = "queued"
+    running = "running"
+    succeeded = "succeeded"
+    failed = "failed"
+[2025-09-10T15:27:17] tokens used: 1781
+[2025-09-10T15:27:20] exec bash -lc "sed -n '1,240p' apps/block0_worker/worker.py" in /home/aksingh/code_test
+[2025-09-10T15:27:20] bash -lc "sed -n '1,240p' apps/block0_worker/worker.py" succeeded in 24ms:
+import os
+import uuid
+from datetime import datetime
+from celery import Celery
+from structlog import get_logger
+
+from shared.db.session import SessionLocal
+from shared.db import models
+from shared.db.models import ProcessingStatus
+from shared.quality.metrics import compute_metrics_and_warnings
+
+log = get_logger()
+
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", os.getenv("REDIS_URL", "redis://redis:6379/0"))
+CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", "redis://redis:6379/1")
+
+celery_app = Celery("block0")
+celery_app.conf.broker_url = CELERY_BROKER_URL
+celery_app.conf.result_backend = CELERY_RESULT_BACKEND
+
+[2025-09-10T15:27:20] tokens used: 1036
+[2025-09-10T15:27:22] exec bash -lc "sed -n '1,240p' shared/storage/s3.py" in /home/aksingh/code_test
+[2025-09-10T15:27:22] bash -lc "sed -n '1,240p' shared/storage/s3.py" succeeded in 22ms:
+import hashlib
+import os
+from minio import Minio
+
+
+class Storage:
+    def __init__(self):
+        endpoint = os.getenv("S3_ENDPOINT_URL", "http://localhost:9000").replace("http://", "").replace("https://", "")
+        secure = os.getenv("S3_SECURE", "false").lower() in {"1", "true", "yes", "on"}
+        self.bucket = os.getenv("S3_BUCKET", "firstdraft-dev")
+        self.client = Minio(
+            endpoint,
+            access_key=os.getenv("S3_ACCESS_KEY", "minioadmin"),
+            secret_key=os.getenv("S3_SECRET_KEY", "minioadmin"),
+            secure=secure,
+        )
+
+    def ensure_bucket(self):
+        found = self.client.bucket_exists(self.bucket)
+        if not found:
+[2025-09-10T15:27:23] tokens used: 791
+[2025-09-10T15:27:24] exec bash -lc "sed -n '1,240p' shared/quality/metrics.py" in /home/aksingh/code_test
+[2025-09-10T15:27:24] bash -lc "sed -n '1,240p' shared/quality/metrics.py" succeeded in 23ms:
+from typing import Tuple, Dict, List
+
+
+def compute_metrics_and_warnings() -> Tuple[Dict, List[str], str]:
+    """Stubbed metrics and warnings.
+    Returns: (metrics, warnings, ocr_text)
+    """
+    metrics = {
+        "dpi": 200,
+        "blur_score": 0.4,
+        "skew_degrees": 2.0,
+        "ocr_confidence": 0.62,
+        "language_mix": "eng",
+    }
+    warnings = []
+    if metrics["dpi"] < 250:
+        warnings.append("Low DPI may reduce OCR accuracy")
+    if metrics["blur_score"] > 0.35:
+        warnings.append("Image blur detected; consider a sharper scan")
+    if metrics["skew_degrees"] > 1.5:
+[2025-09-10T15:27:24] tokens used: 575
+[2025-09-10T15:27:56] ERROR: stream error: stream disconnected before completion: Transport error: error decoding response body; retrying 1/5 in 192ms…
+
+[2025-09-10T15:28:07] thinking
+
+**Evaluating project logic**
+
+I'm estimating credits before runs, then finalizing based on metrics while comparing the budget to the recommended model selection. I’ll propose choosing the engine based on quality modes and metrics, then updating credits accordingly. Acceptance criteria will include OCR accuracy and throughput performance, such as pages per hour. My plan involves various tests, including unit tests and integration tests. I'll also focus on observability, utilizing structlog, correlation IDs, and security measures like tenant isolation.
+**Defining integration steps**
+
+I’m outlining the immediate next steps for early Block 1 integration. First, I need to define a handoff interface for entity discovery, providing page-level normalized text outputs with metadata. I should also set up an event or API for fetching results and implement a structured schema for Block 1 input. I’ll aim for 2-3 sprints over 6-8 weeks, ideally going with three sprints of two weeks each, plus an optional buffer for polishing. I'll specify tasks, roles, and acceptance criteria throughout.
+**Planning storage layout**
+
+I'm tasked with providing a content-addressed storage layout and designing an idempotent job structure. This means using a job ID, chunking pages, storing per-page, and implementing deduplication based on SHA256, along with reprocessing rules and retries. I'll need to make database schema changes, like adding indexes and specific tables for cases and document pages. The integration with the LLM router might not happen immediately, so I'll define a "ProcessedDocument" JSON schema for output, including metrics and URIs. I'll also incorporate acceptance criteria, Hindi support, and a timeline with paths for files.
+**Structuring the response**
+
+I’m organizing a detailed plan for the FirstDraft v2.0 Block 0a to Block 1 transition over 6-8 weeks. My outline includes sections like Scope & Objectives, Architecture & Design Decisions, Data & Storage Layout, and a Phased Plan with three sprints, listing goals, tasks with owners and skills, acceptance criteria, and artifacts. I’ll detail APIs, job orchestration, credits, testing strategy, observability, security, risks, and mitigations. I’ll keep it concise and readable, using markdown for clarity and defining specific tasks for each role involved.
+**Defining acceptance criteria and metrics**
+
+I need to define acceptance criteria, like processing a 20-page mixed PDF with 95% of pages having OCR confidence of at least 0.65 for English and 0.55 for Hindi. Performance should start at a baseline of 60 pages per hour per worker using Tesseract, with a target of 120 pages per hour through ocrmypdf parallelization. I'll compute metrics such as DPI, blur, skew, OCR confidence, and language mix while being cautious about heavy external dependencies. I'll incorporate costs for per-page processing, setting up an endpoint for presigned URLs to MinIO S3, and reference specific file paths for changes.
+[2025-09-10T15:28:26] codex
+**Defining integration steps**
+
+I’m outlining the immediate next steps for early Block 1 integration. First, I need to define a handoff interface for entity discovery, providing page-level normalized text outputs with metadata. I should also set up an event or API for fetching results and implement a structured schema for Block 1 input. I’ll aim for 2-3 sprints over 6-8 weeks, ideally going with three sprints of two weeks each, plus an optional buffer for polishing. I'll specify tasks, roles, and acceptance criteria throughout.
+[2025-09-10T15:28:26] codex
+**Planning storage layout**
+
+I'm tasked with providing a content-addressed storage layout and designing an idempotent job structure. This means using a job ID, chunking pages, storing per-page, and implementing deduplication based on SHA256, along with reprocessing rules and retries. I'll need to make database schema changes, like adding indexes and specific tables for cases and document pages. The integration with the LLM router might not happen immediately, so I'll define a "ProcessedDocument" JSON schema for output, including metrics and URIs. I'll also incorporate acceptance criteria, Hindi support, and a timeline with paths for files.
+[2025-09-10T15:28:26] codex
+**Structuring the response**
+
+I’m organizing a detailed plan for the FirstDraft v2.0 Block 0a to Block 1 transition over 6-8 weeks. My outline includes sections like Scope & Objectives, Architecture & Design Decisions, Data & Storage Layout, and a Phased Plan with three sprints, listing goals, tasks with owners and skills, acceptance criteria, and artifacts. I’ll detail APIs, job orchestration, credits, testing strategy, observability, security, risks, and mitigations. I’ll keep it concise and readable, using markdown for clarity and defining specific tasks for each role involved.
+[2025-09-10T15:28:26] codex
+**Defining acceptance criteria and metrics**
+
+I need to define acceptance criteria, like processing a 20-page mixed PDF with 95% of pages having OCR confidence of at least 0.65 for English and 0.55 for Hindi. Performance should start at a baseline of 60 pages per hour per worker using Tesseract, with a target of 120 pages per hour through ocrmypdf parallelization. I'll compute metrics such as DPI, blur, skew, OCR confidence, and language mix while being cautious about heavy external dependencies. I'll incorporate costs for per-page processing, setting up an endpoint for presigned URLs to MinIO S3, and reference specific file paths for changes.
+[2025-09-10T15:28:26] codex
+
+Here’s a concrete, engineering-led plan to take Block 0a (Document Pre-processing) from scaffold to a production-ready MVP, and set clean handoff interfaces for early Block 1 integration. This respects the current repo scaffold, stack, and constraints, and keeps cost low while biasing toward accuracy.
+
+Scope: Block 0a to MVP + early Block 1 handoff. No code changes in this doc; references to paths indicate where changes will land.
+
+1) Phased Plan (6–8 Weeks, 3 Sprints)
+
+Sprint 1 (Weeks 1–2): OCR + Normalization + Metrics to Functional Parity
+- Goals: End-to-end upload→process→report flow works with real OCR (ENG+HIN), with normalization and page-level metrics. Keep “warn not reject”.
+- Tasks
+  - OCR adapters:
+    - Add baseline Tesseract (CLI + `pytesseract`) and `ocrmypdf` bridge. Owner: CV/OCR (OpenCV, Tesseract).
+    - Optional feature flags for PaddleOCR and cloud OCR (off by default). Owner: CV/OCR.
+    - Where: `apps/block0_worker/worker.py`, new `shared/ocr/adapters/{tesseract.py, ocrmypdf.py, paddle.py}`.
+  - Normalization:
+    - Implement skew/rotation, denoise, contrast, grayscale via OpenCV; write normalized page images. Owner: CV/OCR.
+    - Where: `shared/quality/normalize.py` (new).
+  - Metrics:
+    - Compute page-level metrics: dpi (estimate), blur (Laplacian), skew angle (Hough/deskew residual), OCR conf (from adapter), language mix (script-detection heuristic + Tesseract language codes). Owner: CV/OCR.
+    - Where: expand `shared/quality/metrics.py`.
+  - Storage layout (content-addressed):
+    - Commit per-page artifacts with stable keys (see “Storage Layout”). Owner: BE.
+    - Where: `shared/storage/s3.py` + usage in worker.
+  - Pipeline:
+    - Implement page chunking inside worker and retries (idempotent). Owner: BE (Celery).
+    - Where: `apps/block0_worker/worker.py`.
+  - API: Keep existing upload/job/report; add `GET /healthz`. Owner: BE (FastAPI).
+    - Where: `apps/block0_api/main.py`.
+  - Docs: Brief setup notes (ENG/HIN) for ocrmypdf/tesseract. Owner: Docs.
+- Acceptance
+  - Upload a 10–20 page PDF (ENG), and a mixed ENG/HIN sample; `/v0/jobs/{id}` reports succeeded; `/v0/documents/{id}/report.json|md` reflects metrics and warnings.
+  - 95% of pages produce non-empty OCR; Hindi pages produce text with legible content in test set (not accuracy-graded yet).
+  - Artifacts are written to MinIO with deterministic keys.
+- Artifacts
+  - OCR adapter code and feature flags.
+  - Normalization module with unit tests.
+  - Updated metrics with page-level aggregation and warnings.
+  - `/healthz` endpoint, updated README/PRD notes.
+
+Sprint 2 (Weeks 3–4): Hardening, Idempotency, Credits Finalization, Observability
+- Goals: Production-grade idempotency, retries, final credit settlement, observability, and presigned upload option.
+- Tasks
+  - Idempotent jobs + page-level retries:
+    - Introduce page work units; track page hashes and results to avoid rework. Owner: BE.
+    - Where: new table (see “DB Refinements”), update worker logic in `apps/block0_worker/worker.py`.
+  - Credits:
+    - Implement actual cost settlement: per-page cost by adapter path and quality_mode; replace estimate entry. Owner: BE/Product.
+    - Where: `shared/quality/metrics.py` (cost fn) + worker finalize step and credits writes.
+  - Presigned upload (optional):
+    - `POST /v0/uploads/presign` to support large files; maintain current POST upload path. Owner: BE.
+    - Where: `apps/block0_api/main.py`, `shared/storage/s3.py` (presign).
+  - Observability:
+    - Correlation IDs: propagate request `X-Request-ID` → job → page tasks; log structure via `structlog`. Owner: Infra/BE.
+    - Metrics: Celery task duration, queue depth, page throughput; export Prometheus metrics. Owner: Infra.
+    - Where: API/worker, new `shared/observability/metrics.py`, `infra/docker-compose.yml` additions (Prometheus/Grafana optional in dev).
+  - Performance pass:
+    - Batch/parallelize `ocrmypdf`/Tesseract page processing; tune worker concurrency. Owner: CV/OCR.
+  - Security basics:
+    - Validate tenant scoping on object keys; signed URL TTLs; strict content-types. Owner: Infra/BE.
+- Acceptance
+  - Retrying a job is idempotent: no duplicate credits or objects; rerun updates only failed pages.
+  - Credits: estimate inserted at upload; final entry created on success/fail, is_estimate toggled or compensating entry written.
+  - Observability: logs carry `request_id`, `job_id`, `page_index`; metrics visible locally.
+  - Large files (100–200 MB) supported via presigned uploads.
+- Artifacts
+  - New DB tables/migrations; updated worker; metrics dashboard JSON; runbook notes.
+
+Sprint 3 (Weeks 5–6): Early Block 1 Handoff + Perf + QA
+- Goals: Stable “ProcessedDocument” contract for Block 1; improve language handling; performance smoke; fixtures and golden docs; warning-only UX semantics.
+- Tasks
+  - Block 1 Handoff:
+    - Define `ProcessedDocument` JSON (URIs to OCR text, per-page metrics, language spans, warnings). Owner: BE/Product.
+    - Where: API: `GET /v0/documents/{id}/processed.json`; object keys for text + metadata (see “Storage Layout”).
+  - Language handling:
+    - ENG+HIN: auto-detect per page; for “recommended” mode include second pass with language-specific model if mixed. Owner: CV/OCR.
+  - Perf smoke:
+    - Measure N pages/hour per worker; document tunables (Tesseract configs, downsampling). Owner: Infra/QA.
+  - QA:
+    - Golden docs set; assert stable outputs across runs; document known warnings and thresholds. Owner: QA.
+  - Docs:
+    - India-first docs (ENG/HIN), error playbook, credit transparency section. Owner: Docs.
+- Acceptance
+  - Block 1 can fetch a single JSON and follow URIs to get text + per-page metadata; format is versioned and documented in repo.
+  - Throughput: ≥120 pages/hour on dev box for standard 300 DPI English scans; Hindi ≥60 pages/hour.
+  - Tests green; golden outputs stable.
+- Artifacts
+  - Handoff schema doc + OpenAPI additions; example processed JSON; test fixtures.
+
+2) Detailed Design Choices
+
+OCR Adapter Strategy
+- Default path:
+  - “budget”: per-page Tesseract (`--oem 1 --psm 6`), languages auto from heuristics; minimal normalization.
+  - “recommended”: `ocrmypdf` cleanup → per-page Tesseract; optional second pass for Hindi-heavy pages with lang=hin.
+- Feature flags:
+  - `USE_PADDLE_OCR` for Hindi-heavy docs (off by default).
+  - `USE_CLOUD_OCR` gated by env; never default.
+- Abstraction:
+  - `shared/ocr/adapters/base.py`: interface extract_text(image|pdf, langs)->(text, conf, spans).
+  - Adapters encapsulate engine specifics and return normalized results.
+
+Image Normalization Pipeline
+- Steps: convert to grayscale, deskew (Hough-based), denoise (bilateral), contrast (CLAHE), optional binarization (Sauvola) for low-DPI scans.
+- Heuristic gating by initial quality_mode and PDF/image metadata.
+
+Language Handling (ENG+HIN)
+- Script detection via Unicode block counts; if Devanagari > threshold, set langs “hin+eng”.
+- Conf thresholds drive warnings when mixed language detected but engine lacks second model.
+
+Content-Addressed Storage Layout
+- Existing prefix: `tenant_id/sha256[:2]/sha256/v{version}/...`.
+- Artifacts:
+  - Original: `{prefix}/orig/{filename}`
+  - Normalized pages: `{prefix}/pages/{i:04d}.png`
+  - OCR text per page: `{prefix}/pages/{i:04d}.txt`
+  - OCR combined: `{prefix}/ocr/combined.txt`
+  - Metrics per page: `{prefix}/metrics/pages/{i:04d}.json`
+  - Document summary: `{prefix}/metrics/document.json`
+- All written via `shared/storage/s3.py`; only URIs persisted in DB.
+
+Idempotent Job Design (Page-Chunking, Retries)
+- A job enumerates pages; each page unit keyed by `(document_id, version, page_index, page_sha256)`.
+- If object exists and page_sha256 unchanged, skip work.
+- Retries are page-scoped; job aggregates status; finalization runs only after all pages terminal (success|permanent_fail).
+- Reprocessing: new DocumentVersion with incremented `version`; never overwrite prior.
+
+DB Schema Refinements
+- New tables:
+  - `document_pages` (id, document_id, version, index, page_sha256, normalized_uri, ocr_text_uri, metrics, warnings, lang, created_at).
+  - `cases` (id, tenant_id, ref, title, created_at); `documents.case_id` FK; keep `case_ref` for now, plan migration.
+- Indexes:
+  - `document_pages (document_id, version, index)`, `documents (tenant_id, bytes_sha256)`, `processing_jobs (document_id, created_at)`.
+- DocumentVersion:
+  - Add `page_count` and `processed_json_uri`.
+- Credits:
+  - Add index on `(tenant_id, created_at)`, `(job_id)`.
+
+API Adjustments
+- Health:
+  - `GET /healthz`: checks DB, MinIO, Redis reachability.
+- Presigned upload:
+  - `POST /v0/uploads/presign` → returns `url`, `fields` (S3 form) for multipart; response includes `bytes_sha256` for dedupe.
+- Reports:
+  - `GET /v0/documents/{id}/processed.json` → returns stable “ProcessedDocument v1” schema (Block 1 interface).
+- Backcompat:
+  - Keep `/v0/documents/{id}/report.json|md` as summaries.
+
+Credits Logic
+- Estimate at upload:
+  - Based on bytes and mime; bump for image PDFs; add Hindi multiplier (if detected by filename/content sniff).
+- Finalization:
+  - Sum per-page unit costs chosen by engine path:
+    - budget: 1 credit/page
+    - recommended: 2 credits/page
+    - Hindi extra pass: +1 credit/page
+    - `ocrmypdf` cleanup: +0.5 credit/page-equivalent (rounding up)
+  - On failure: convert estimate to actual for processed pages; issue compensating positive delta for unprocessed.
+
+3) Test Strategy
+
+Unit
+- Adapters: mock Tesseract/Paddle outputs; validate text/conf/spans mapping.
+- Normalization: golden image diffs within tolerance; skew < 0.5° residual.
+- Metrics: correct blur/skew/dpi calculations on fixtures; language detection.
+
+Integration
+- E2E upload→process→report on dev compose:
+  - Cases: clean ENG PDF, noisy ENG scan, mixed ENG/HIN, image-only PDF.
+  - Assertions: job success, URIs present, warnings only (no hard rejects), credits estimate→finalize flow.
+
+Golden Docs
+- Place under `tests/fixtures/golden/*`; assert `processed.json` stable by semantic comparison (ignore timestamps/ids).
+
+Performance Smoke
+- Single worker throughput: report N pages/hour on standard datasets.
+- Alert if < thresholds (ENG < 120 pph, HIN < 60 pph).
+
+Fixtures
+- Include 3–5 public-domain docs (ENG/HIN), plus synthetic noisy scans.
+
+4) Observability & Ops
+
+- Logging: `structlog` with `request_id`, `tenant_id`, `job_id`, `page_index`, `sha256`. Redact PII.
+- Metrics:
+  - Prometheus exporters: task duration, queue depth, processed pages, OCR conf distribution, warning counts.
+- Tracing:
+  - Lightweight `X-Request-ID` and Celery task_id propagation; later optional OpenTelemetry.
+- Dashboards:
+  - Grafana: pipeline overview (queue depth, durations), quality overview (conf/skew/blur histograms).
+- Runbooks:
+  - `RUNBOOK.md` additions: SLOs, retry playbook, credit anomalies, backfill/reprocess steps.
+
+5) Security & Privacy
+
+- Per-tenant isolation:
+  - Object keys must start with `tenant_id`; enforce on both read/write in `shared/storage/s3.py`.
+- Secrets:
+  - Dev via `.env`; production via path to cloud secret management; do not log secret envs.
+- PII:
+  - OCR text considered sensitive; all S3 access via signed URLs; TTL defaults to short-lived (e.g., 15 min).
+- Input validation:
+  - Enforce mime whitelist; size limits; antivirus scan stub hook (optional later).
+- AuthN/Z (future-ready):
+  - Keep tenant_id + user_id checks; later replace with JWT on API gateway, but preserve FKs.
+
+6) Risks & Mitigations
+
+- Low-quality scans (blur/low DPI): mitigate via normalization + warnings; enable “recommended” path automatically if metrics bad (warn about added cost).
+- Hindi OCR quality: Tesseract hin model may underperform; mitigate with flaggable PaddleOCR; allow manual language override parameter.
+- Performance variability: batch tuning and CPU limits; pre-cache Tesseract language data in Docker images.
+- Idempotency bugs: rely on page_sha256 + existence checks; add unique constraints at DB level for page rows.
+- Large file uploads: presigned S3 forms; stream processing for PDFs; ensure API remains stateless for uploads.
+- Cost overrun: credit budget warns before run; enforce tenant budgets (soft limits) with clear warnings.
+- Storage growth: content-addressed dedupe; document reprocessing creates new version but reuses identical page artifacts.
+- Celery single point: monitor Redis health; configure a dead-letter queue; retries with backoff.
+- Language mix detection errors: make warnings non-blocking, keep outputs, annotate low confidence clearly.
+
+7) Staged Rollout & Success Criteria
+
+- Stage 0: Internal dev (week 2): upload→process→report works; OCR for ENG.
+- Stage 1: Internal pilot (week 4): Hindi included; presigned uploads; idempotent retries; credits finalization.
+- Stage 2: Private beta tenants (week 6–7): Block 1 handoff stable; dashboards; golden regression suite.
+- Success criteria:
+  - Functionality: ≥95% pages produce OCR; warnings surfaced when quality below thresholds.
+  - Performance: ENG ≥120 pph, HIN ≥60 pph on dev hardware.
+  - Reliability: <2% job failures; retries recover ≥80% transient failures.
+  - Transparency: credits estimate within ±25% of actual; finalization accurate.
+
+8) Concrete Architecture/Code Touchpoints
+
+- API (`apps/block0_api/main.py`)
+  - Add `/healthz`, `/v0/uploads/presign`, `/v0/documents/{id}/processed.json`
+  - Request ID middleware; stricter tenant checks; optional `quality_mode` semantic adjustments.
+- Worker (`apps/block0_worker/worker.py`)
+  - Replace stub with page-chunk pipeline: normalize → OCR → metrics → finalize.
+  - Idempotent page units, retries, metrics/credits aggregation.
+- Storage (`shared/storage/s3.py`)
+  - Presigned POST/GET; enforced tenant prefixes; new key helpers for pages/metrics.
+- Quality (`shared/quality/normalize.py`, expand `metrics.py`)
+  - OpenCV normalization; robust metrics; unit tests.
+- OCR (`shared/ocr/adapters/*`)
+  - Base + tesseract + ocrmypdf + feature-flag paddles; adapter tests.
+- DB (`shared/db/models.py`, migrations under `alembic/versions/*`)
+  - Add `document_pages`, optional `cases`, indexes; extend `document_versions`.
+- Scripts (`scripts/bootstrap_dev.py`)
+  - Ensure default tenant/users; seed golden fixtures (local only).
+- Infra (`infra/docker-compose.yml`, `infra/dockerfiles/Dockerfile.worker`)
+  - Install tesseract + language packs + `ocrmypdf`; expose Prometheus endpoints; optional Grafana/Prometheus in dev.
+
+9) Gantt-Style Timeline (Text)
+
+- Week 1: OCR adapters (tesseract/ocrmypdf), normalization, basic metrics, health endpoint.
+- Week 2: Page-chunking, storage layout, ENG/HIN detection, E2E path green; docs setup ENG/HIN.
+- Week 3: Idempotency (page-level), retries, presigned uploads, credits finalization.
+- Week 4: Observability (logs/metrics), dashboards, performance tuning; internal pilot.
+- Week 5: Block 1 handoff schema + endpoint, fixtures/golden tests, Hindi improvements.
+- Week 6: Perf smoke, QA regression, polish + runbooks; private beta readiness.
+- Weeks 7–8 (buffer): Bugfixes, refine credits prediction, pilot feedback.
+
+10) Day 1 Top-10 Punch List
+
+1) Lock design for storage keys and `ProcessedDocument v1` schema; write a short ADR.
+2) Add tesseract + ocrmypdf to `infra/dockerfiles/Dockerfile.worker`; install `tesseract-ocr-eng` and `tesseract-ocr-hin`.
+3) Create `shared/ocr/adapters/base.py` and `tesseract.py`; wire into `apps/block0_worker/worker.py`.
+4) Implement OpenCV normalization in `shared/quality/normalize.py` and call it before OCR.
+5) Expand `shared/quality/metrics.py` with real blur/skew/dpi/lang metrics and thresholds.
+6) Implement page splitting for PDFs and S3 writes of per-page artifacts via `shared/storage/s3.py`.
+7) Add `/healthz` and request ID middleware in `apps/block0_api/main.py`.
+8) Define DB migrations for `document_pages` and indexes; wire reads/writes.
+9) Add unit tests for adapters/normalize/metrics and a minimal integration test for upload→job→report.
+10) Draft India-first docs for setup, warnings behavior, and credit transparency in `README.md`/`RUNBOOK.md`.
+
+Owners/Skills Needed
+- BE (FastAPI/Celery/SQLAlchemy): API, worker orchestration, DB, credits.
+- CV/OCR (OpenCV/Tesseract/Paddle): normalization, metrics, adapters, tuning.
+- Infra (Docker/Compose/MinIO/Redis/Postgres/Prometheus): images, observability, local dashboards.
+- QA (pytest/golden tests): fixtures, regression suite, performance smoke.
+- Docs (ENG/HIN): setup, UX warnings, budgeting.
+
+Acceptance Criteria (Summary per Phase)
+- Sprint 1: E2E with real OCR + normalization + metrics, warnings-only behavior, ENG/HIN basic.
+- Sprint 2: Idempotent page retries, final credits accurate, observability set, presigned uploads working.
+- Sprint 3: Stable Block 1 handoff JSON, throughput targets, golden tests stable, India-first docs.
+
+Expected Artifacts
+- Code: OCR adapters, normalization, enhanced metrics, presigned upload, processed.json endpoint, migrations.
+- Ops: Prometheus/Grafana configs (dev), runbooks, dashboards.
+- Docs: ADR for storage + schema, ENG/HIN quickstart, credit transparency guide.
+- Tests: Unit + integration + golden fixture set, perf smoke scripts.
+
+Storage Layout (Detailed)
+- Prefix: `tenant_id/{sha2}/{sha256}/v{n}/`
+- Paths:
+  - `orig/{filename}`
+  - `pages/{0001..NNNN}.png`
+  - `pages/{0001..NNNN}.txt`
+  - `metrics/pages/{0001..NNNN}.json`
+  - `ocr/combined.txt`
+  - `processed/processed.json` (Block 1 handoff)
+- DB URIs:
+  - `document_versions.storage_uri` → `orig/...`
+  - `document_versions.ocr_text_uri` → `ocr/combined.txt`
+  - `document_versions.processed_json_uri` → `processed/processed.json`
+  - `document_pages.*_uri` per page
+
+Block 1 Handoff (ProcessedDocument v1)
+- JSON fields:
+  - `document_id`, `version`, `page_count`
+  - `pages[]`: `{index, normalized_uri, ocr_text_uri, metrics{dpi,blur,skew,ocr_conf,lang}, warnings[]}`
+  - `summary`: `{languages, warnings, credit_actual, engine_path}`, `generated_at`
+- Contract: backward-compatible (new fields additive), versioned under `"schema_version": "ProcessedDocument/v1"`.
+
+With this plan, we can deliver a production-grade Block 0a in 6–8 weeks, with clear interfaces for Block 1 while maintaining transparency, tenant isolation, and warning-first UX. If you want, I can turn this plan into an issue list with scoped tickets and acceptance checks mapped to files (no code changes).
+[2025-09-10T15:29:49] tokens used: 6112
