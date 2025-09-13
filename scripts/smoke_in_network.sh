@@ -5,7 +5,7 @@ set -euo pipefail
 # Prereqs: `docker-compose -f infra/docker-compose.yml up -d postgres redis minio create-bucket`
 
 NETWORK=${NETWORK:-firstdraft_net}
-IMAGE=${IMAGE:-infra_api:latest}
+IMAGE=${IMAGE:-infra-api:latest}
 
 echo "Running smoke inside network: $NETWORK using image: $IMAGE"
 docker run --rm --network "$NETWORK" \

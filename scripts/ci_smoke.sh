@@ -27,7 +27,7 @@ echo "[ci_smoke] Running DB migrations (alembic upgrade head)..."
 docker run --rm --network "$NETWORK_NAME" \
   --env-file "$ROOT_DIR/.env" \
   -e PYTHONPATH=/app \
-  infra_api:latest alembic upgrade head
+  infra-api:latest alembic upgrade head
 
 echo "[ci_smoke] Starting api and worker..."
 dc up -d api worker
@@ -46,6 +46,6 @@ until docker run --rm --network "$NETWORK_NAME" infra_api:latest curl -fsS http:
 done
 
 echo "[ci_smoke] Running in-network smoke..."
-NETWORK="$NETWORK_NAME" IMAGE=infra_api:latest "$ROOT_DIR/scripts/smoke_in_network.sh"
+NETWORK="$NETWORK_NAME" IMAGE=infra-api:latest "$ROOT_DIR/scripts/smoke_in_network.sh"
 
 echo "[ci_smoke] OK"
