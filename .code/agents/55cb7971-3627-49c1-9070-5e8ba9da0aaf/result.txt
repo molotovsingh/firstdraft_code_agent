@@ -1,0 +1,472 @@
+[2025-09-10T16:39:31] Code v0.2.112
+--------
+workdir: /home/aksingh/.code/working/code_test/branches/code-code-now-that-git
+model: gpt-5
+provider: openai
+approval: never
+sandbox: read-only
+reasoning effort: medium
+reasoning summaries: auto
+--------
+[2025-09-10T16:39:31] User instructions:
+Context: Repo root /home/aksingh/code_test; stack uses MinIO S3. Keep code consistent with existing style; use current Storage client. No DB writes in presign endpoints.
+
+Agent: Now that Git is initialized, verify the agent path is healthy and return small, surgical patches we can apply. Keep edits minimal and high‑value.
+
+Implement exactly these tiny tasks:
+A) Presigned uploads (API + storage helper)
+- Add POST /v0/uploads/presign that accepts tenant_id, user_id, filename, mime and returns a presigned PUT URL and object_key (do not write to DB). We'll store uploads directly to S3/MinIO, and then call /v0/documents/upload with a lightweight mode later (out of scope). For now, just return a stable key under tenant/sha[:2]/sha/v1/orig/filename using a random temp suffix to avoid collisions.
+- Add GET /v0/uploads/presign_download?key=<object_key> to generate a short‑lived signed GET for QA.
+- Add helpers in shared/storage/s3.py: presign_put_url(key, expiry=3600) and presign_get_url(key, expiry=600).
+- Update API.md with the new endpoints.
+
+B) Smoke test script
+- scripts/smoke_presign.py that: calls presign, uploads a small local file via the PUT URL, then calls presign_download and verifies a 200 response.
+
+Constraints
+- Do not break existing upload path.
+- Keep changes limited to: apps/block0_api/main.py, shared/storage/s3.py, API.md, scripts/*.
+- No new heavy deps.
+
+Deliver patches in apply_patch format only. Include brief reasoning after the patch.
+
+
+Desired output: *** Begin Patch\n...*** End Patch with all file edits plus brief reasoning
+
+Files to consider: apps/block0_api/main.py, shared/storage/s3.py, API.md
+
+[2025-09-10T16:39:39] thinking
+
+**Reviewing storage options**
+
+I need to focus on making minimal changes while keeping the style consistent. It’s crucial to use the current Storage client for any operations. Reading files is an essential part of the process. To make things easier, I’ll run ripgrep to search for both "s3" and "presign." This way, I can quickly locate any relevant files without overcomplicating things. It feels good to stick to a clear plan!
+[2025-09-10T16:39:40] codex
+
+I’ll scan the repo to understand the current API framework and existing S3 client utilities, then draft minimal patches to add the presign endpoints and helpers.
+[2025-09-10T16:39:42] exec bash -lc 'ls -la' in /home/aksingh/.code/working/code_test/branches/code-code-now-that-git
+[2025-09-10T16:39:42] bash -lc 'ls -la' succeeded in 25ms:
+total 116
+drwxrwxr-x 9 aksingh aksingh  4096 Sep 10 22:09 .
+drwxrwxr-x 5 aksingh aksingh  4096 Sep 10 22:09 ..
+-rw-rw-r-- 1 aksingh aksingh 32305 Sep 10 22:09 ADR.md
+drwxrwxr-x 3 aksingh aksingh  4096 Sep 10 22:09 alembic
+-rw-rw-r-- 1 aksingh aksingh   545 Sep 10 22:09 alembic.ini
+-rw-rw-r-- 1 aksingh aksingh  1315 Sep 10 22:09 API.md
+drwxrwxr-x 4 aksingh aksingh  4096 Sep 10 22:09 apps
+drwxrwxr-x 3 aksingh aksingh  4096 Sep 10 22:09 .code
+-rw-rw-r-- 1 aksingh aksingh   551 Sep 10 22:09 .env
+-rw-rw-r-- 1 aksingh aksingh   551 Sep 10 22:09 .env.example
+-rw-rw-r-- 1 aksingh aksingh    70 Sep 10 22:09 .git
+drwxrwxr-x 3 aksingh aksingh  4096 Sep 10 22:09 infra
+-rw-rw-r-- 1 aksingh aksingh 12696 Sep 10 22:09 PRD.md
+-rw-rw-r-- 1 aksingh aksingh  1574 Sep 10 22:09 README.md
+-rw-rw-r-- 1 aksingh aksingh   411 Sep 10 22:09 requirements.txt
+-rw-rw-r-- 1 aksingh aksingh  1659 Sep 10 22:09 RUNBOOK.md
+drwxrwxr-x 2 aksingh aksingh  4096 Sep 10 22:09 scripts
+drwxrwxr-x 7 aksingh aksingh  4096 Sep 10 22:09 shared
+drwxrwxr-x 4 aksingh aksingh  4096 Sep 10 22:09 test_documents
+[2025-09-10T16:39:42] tokens used: 8076
+[2025-09-10T16:39:44] exec bash -lc "sed -n '1,200p' apps/block0_api/main.py" in /home/aksingh/.code/working/code_test/branches/code-code-now-that-git
+[2025-09-10T16:39:44] bash -lc "sed -n '1,200p' apps/block0_api/main.py" succeeded in 23ms:
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Request
+from fastapi.responses import JSONResponse, PlainTextResponse, Response
+from typing import List, Optional
+import os
+import uuid
+
+from shared.db.session import SessionLocal
+from shared.db import models
+from shared.db.models import ProcessingStatus
+from shared.storage.s3 import Storage
+from shared.quality.metrics import estimate_credits
+from apps.block0_worker.worker import enqueue_process_document
+from structlog import get_logger
+import redis as redis_lib
+from starlette.middleware.base import BaseHTTPMiddleware
+import secrets
+from prometheus_client import Counter, Histogram, CollectorRegistry, generate_latest, CONTENT_TYPE_LATEST
+
+app = FastAPI(title="FirstDraft Block 0a API", version="0.1.0")
+log = get_logger()
+[2025-09-10T16:39:44] tokens used: 773
+[2025-09-10T16:39:46] exec bash -lc "sed -n '200,500p' apps/block0_api/main.py" in /home/aksingh/.code/working/code_test/branches/code-code-now-that-git
+[2025-09-10T16:39:47] bash -lc "sed -n '200,500p' apps/block0_api/main.py" succeeded in 23ms:
+            UPLOAD_FILES_TOTAL.labels(tenant_id=str(tenant.id), mime=doc.mime).inc()
+            JOBS_QUEUED_TOTAL.labels(tenant_id=str(tenant.id)).inc()
+
+            out.append({
+                "document_id": str(doc.id),
+                "job_id": str(job.id),
+                "credit_estimate": estimate,
+            })
+
+        # Record bytes once per request
+        UPLOAD_BYTES_TOTAL.labels(tenant_id=str(tenant.id)).inc(total_bytes)
+        return JSONResponse({"documents": out})
+    finally:
+        db.close()
+
+
+@app.get("/v0/jobs/{job_id}")
+def get_job(job_id: str):
+    db = SessionLocal()
+    try:
+[2025-09-10T16:39:47] tokens used: 1758
+
+[2025-09-10T16:39:50] thinking
+
+**Implementing presign endpoints**
+
+I see that the API is FastAPI, and we need to add presign endpoints in this file. My next step is to open the `shared/storage/s3.py` file, where I can check the Storage client and how presign support is structured. I’ll also look into how the object_key is computed in that file to ensure everything integrates smoothly. Let’s get this done!
+[2025-09-10T16:40:07] exec bash -lc "sed -n '1,220p' shared/storage/s3.py" in /home/aksingh/.code/working/code_test/branches/code-code-now-that-git
+[2025-09-10T16:40:07] bash -lc "sed -n '1,220p' shared/storage/s3.py" succeeded in 24ms:
+import hashlib
+import os
+from minio import Minio
+
+
+class Storage:
+    def __init__(self):
+        endpoint = os.getenv("S3_ENDPOINT_URL", "http://localhost:9000").replace("http://", "").replace("https://", "")
+        secure = os.getenv("S3_SECURE", "false").lower() in {"1", "true", "yes", "on"}
+        self.bucket = os.getenv("S3_BUCKET", "firstdraft-dev")
+        self.client = Minio(
+            endpoint,
+            access_key=os.getenv("S3_ACCESS_KEY", "minioadmin"),
+            secret_key=os.getenv("S3_SECRET_KEY", "minioadmin"),
+            secure=secure,
+        )
+
+    def ensure_bucket(self):
+        found = self.client.bucket_exists(self.bucket)
+        if not found:
+[2025-09-10T16:40:07] tokens used: 1882
+
+[2025-09-10T16:40:09] thinking
+
+**Updating API documentation**
+
+I’m noticing that there are currently no presign helpers available. I should add `presign_put_url` and `presign_get_url` to the mix. It makes sense to update the `API.md` file to include these endpoints. Let's get that open and make sure all the necessary details are included so that everything is clear and up to date. It’s important to keep documentation in sync with the code for better clarity!
+[2025-09-10T16:40:10] exec bash -lc "sed -n '1,240p' API.md" in /home/aksingh/.code/working/code_test/branches/code-code-now-that-git
+[2025-09-10T16:40:10] bash -lc "sed -n '1,240p' API.md" succeeded in 23ms:
+# Block 0a API (v0)
+
+Base URL: `http://localhost:8000`
+
+## POST /v0/documents/upload
+- Multipart form-data parameters:
+  - `tenant_id` (UUID, required)
+  - `user_id` (int, required)
+  - `case_ref` (string, optional)
+  - `quality_mode` (enum: `recommended|budget`, optional)
+  - `files` (one or more files)
+
+Response 200:
+```json
+{
+  "documents": [
+    {
+      "document_id": "<uuid>",
+      "job_id": "<uuid>",
+      "credit_estimate": 42
+[2025-09-10T16:40:10] tokens used: 610
+
+[2025-09-10T16:40:12] thinking
+
+**Assessing endpoint documentation**
+
+I see that we need to create documentation for new endpoints related to presign uploads and downloads. This sounds like a crucial step. It’s important to ensure everything is clear to avoid confusion later on. I also notice there's a scripts directory that already exists, so it might be worth checking its contents to see how they're structured or if anything needs updating. Let's explore that further to get a clear view of what's there!
+[2025-09-10T16:40:15] exec bash -lc 'ls -la scripts && rg -n "presign|upload" -S scripts || true' in /home/aksingh/.code/working/code_test/branches/code-code-now-that-git
+[2025-09-10T16:40:15] bash -lc 'ls -la scripts && rg -n "presign|upload" -S scripts || true' succeeded in 24ms:
+total 20
+drwxrwxr-x 2 aksingh aksingh 4096 Sep 10 22:09 .
+drwxrwxr-x 9 aksingh aksingh 4096 Sep 10 22:09 ..
+-rw-rw-r-- 1 aksingh aksingh 1526 Sep 10 22:09 batch_upload.py
+-rw-rw-r-- 1 aksingh aksingh 1205 Sep 10 22:09 bootstrap_dev.py
+-rw-rw-r-- 1 aksingh aksingh 1989 Sep 10 22:09 quality_summary.py
+[2025-09-10T16:40:15] tokens used: 656
+
+[2025-09-10T16:40:30] thinking
+
+**Exploring presign implementation**
+
+For the presign setup, they want a stable key format under .../v1/orig/filename, using a random suffix to avoid collisions. I’m considering whether to extend Storage.object_key to include 'orig' but want to avoid breaking existing paths. Instead, I can compute the key for the presign endpoint directly. The smoke test requires uploading bytes to check the presigned URL. Now the "stable key" request feels contradictory with the "random temp suffix." So, should I interpret this as needing "orig/filename.random" while retaining a stable base path?
+**Considering placeholder SHA for presign**
+
+I’m thinking about using a placeholder SHA that's random. The term "stable key" suggests we might need to compute the SHA based on a planned temp value, but since I can't compute it from file content yet, that's tricky. They also mentioned storing uploads directly to S3/MinIO, which complicates things for presigning by needing a deterministic staging path. Maybe I should create a random yet stable value—a generated UUID or token that doesn't depend on file bytes—using secrets.token_hex(32) for 64 hex characters.
+**Finalizing presign implementation details**
+
+I’m considering how to conform to SHA length while ensuring unique keys by including a random temp suffix to prevent collisions. I can create a structure like `f"{filename}.{short}"` with a random 6-8 hex string added. This mix of "sha path + v1/orig/<filename>.<temp>" should help maintain uniqueness. For the presign endpoint, I think we’ll go with accepting a JSON body to simplify things, even though existing uploads use forms. The input will need tenant_id, user_id, filename, and mime, but the content-type isn't specified.
+**Implementing JSON request handling**
+
+I’m realizing that the new route could definitely accept JSON, which seems reasonable. Previous endpoints, like `get_job`, allow path or query input. I’m considering using a Pydantic model for the request, but since they haven't utilized it elsewhere, that might not fit their style. To maintain consistency, I’ll keep it simple by accepting a `dict` or defining via Body. For instance, using `tenant_id: str, user_id: int, filename: str`, and for POST, FastAPI usually treats them as query parameters unless specified otherwise. Ultimately, I think using a dict with `Body(...)` will work best for easier scripting.
+**Implementing presign endpoints and functionality**
+
+I’m planning to implement the POST endpoint for presigning uploads at `/v0/uploads/presign`. The function will validate the keys like tenant_id, user_id, and an optional mime type, generate a random SHA with `secrets.token_hex(32)`, and create a unique key using a random suffix. 
+
+I’ll also create a GET endpoint for presigning downloads, validating the key and setting an expiry. Next, I need to implement the presign methods in the Storage class for both upload and download URLs. Lastly, I’ll update the documentation and create a smoke test script that accepts CLI arguments or uses environment variables to maintain flexibility.
+[2025-09-10T16:40:48] codex
+**Considering placeholder SHA for presign**
+
+I’m thinking about using a placeholder SHA that's random. The term "stable key" suggests we might need to compute the SHA based on a planned temp value, but since I can't compute it from file content yet, that's tricky. They also mentioned storing uploads directly to S3/MinIO, which complicates things for presigning by needing a deterministic staging path. Maybe I should create a random yet stable value—a generated UUID or token that doesn't depend on file bytes—using secrets.token_hex(32) for 64 hex characters.
+[2025-09-10T16:40:48] codex
+**Finalizing presign implementation details**
+
+I’m considering how to conform to SHA length while ensuring unique keys by including a random temp suffix to prevent collisions. I can create a structure like `f"{filename}.{short}"` with a random 6-8 hex string added. This mix of "sha path + v1/orig/<filename>.<temp>" should help maintain uniqueness. For the presign endpoint, I think we’ll go with accepting a JSON body to simplify things, even though existing uploads use forms. The input will need tenant_id, user_id, filename, and mime, but the content-type isn't specified.
+[2025-09-10T16:40:48] codex
+**Implementing JSON request handling**
+
+I’m realizing that the new route could definitely accept JSON, which seems reasonable. Previous endpoints, like `get_job`, allow path or query input. I’m considering using a Pydantic model for the request, but since they haven't utilized it elsewhere, that might not fit their style. To maintain consistency, I’ll keep it simple by accepting a `dict` or defining via Body. For instance, using `tenant_id: str, user_id: int, filename: str`, and for POST, FastAPI usually treats them as query parameters unless specified otherwise. Ultimately, I think using a dict with `Body(...)` will work best for easier scripting.
+[2025-09-10T16:40:48] codex
+**Implementing presign endpoints and functionality**
+
+I’m planning to implement the POST endpoint for presigning uploads at `/v0/uploads/presign`. The function will validate the keys like tenant_id, user_id, and an optional mime type, generate a random SHA with `secrets.token_hex(32)`, and create a unique key using a random suffix. 
+
+I’ll also create a GET endpoint for presigning downloads, validating the key and setting an expiry. Next, I need to implement the presign methods in the Storage class for both upload and download URLs. Lastly, I’ll update the documentation and create a smoke test script that accepts CLI arguments or uses environment variables to maintain flexibility.
+[2025-09-10T16:40:48] exec bash -lc "sed -n '1,240p' scripts/bootstrap_dev.py" in /home/aksingh/.code/working/code_test/branches/code-code-now-that-git
+[2025-09-10T16:40:48] bash -lc "sed -n '1,240p' scripts/bootstrap_dev.py" succeeded in 23ms:
+import uuid
+from shared.db.session import SessionLocal
+from shared.db import models
+
+
+def main():
+    db = SessionLocal()
+    try:
+        # Create a default tenant and users if not exist
+        tenant_id = uuid.UUID("11111111-1111-1111-1111-111111111111")
+        tenant = db.get(models.Tenant, tenant_id)
+        if tenant is None:
+            tenant = models.Tenant(id=tenant_id, name="Dev Tenant")
+            db.add(tenant)
+            db.commit()
+
+        user1 = db.query(models.User).filter_by(tenant_id=tenant.id, username="amit").first()
+        if user1 is None:
+            user1 = models.User(tenant_id=tenant.id, username="amit", display_name="Amit")
+            db.add(user1)
+[2025-09-10T16:40:48] tokens used: 1735
+[2025-09-10T16:40:57] exec bash -lc 'cat requirements.txt' in /home/aksingh/.code/working/code_test/branches/code-code-now-that-git
+[2025-09-10T16:40:57] bash -lc 'cat requirements.txt' succeeded in 22ms:
+fastapi==0.111.0
+uvicorn[standard]==0.30.1
+pydantic==2.8.2
+SQLAlchemy==2.0.32
+psycopg[binary]==3.2.1
+alembic==1.13.2
+celery==5.4.0
+redis==5.0.7
+minio==7.2.8
+boto3==1.34.162
+python-multipart==0.0.9
+markdown-it-py==3.0.0
+Pillow==10.4.0
+opencv-python-headless==4.10.0.84
+pytesseract==0.3.13
+langdetect==1.0.9
+orjson==3.10.7
+tenacity==8.5.0
+structlog==24.1.0
+requests==2.32.3
+[2025-09-10T16:40:57] tokens used: 680
+
+[2025-09-10T16:41:06] thinking
+
+**Preparing for QA implementation**
+
+I need to focus on the requirement for QA. I plan to generate the URL without checking for existence, keeping it minimal. I’ll also add entries to the API.md and create a script file. Once I've got these pieces ready, I'll prepare a patch to implement everything smoothly. It's a straightforward process, and organizing it will help ensure that the work goes efficiently! Let's get started on that!
+[2025-09-10T16:41:06] codex
+
+Adding presign helpers in storage, new upload presign API endpoints, docs, and a smoke test script with minimal changes.
+[2025-09-10T16:41:13] tokens used: 870
+
+[2025-09-10T16:41:23] thinking
+
+**Considering endpoint organization**
+
+I need to avoid conflicting with other routes while positioning new endpoints. I think placing them after the metrics endpoint and before the documents endpoints maintains good grouping. Including log usage should remain optional, and for consistency, many endpoints return either JSONResponse or dict. Since POST requests used JSONResponse for uploads, it makes sense to stick with that. I’ll implement the presign_upload function to validate required fields but keep it minimal.
+**Generating presign URLs**
+
+I'm generating a random SHA and a suffix for the key. The key structure will follow a specific pattern, and I'm using the Storage class to get a presigned URL for putting an object with a 1-hour expiry. 
+
+I’ll also add a new GET endpoint for presign_download. It will return a presigned URL and expiry for downloading. 
+
+Next, I need to update API.md with new sections, including sample requests and responses. Plus, I will implement a script to handle the presigning process and file uploads, ensuring it follows the requirements.
+**Implementing file uploads**
+
+I’m thinking of creating a small file in the /tmp directory or current dir but prefer to upload bytes directly using `requests.put` with `data=b"hello"`. The requirement mentions a "small local file," but I realize I could use `tempfile.NamedTemporaryFile`, even though it writes to disk, which might not be permitted in CI. To keep it simple and avoid writing, I’ll just upload content in memory. 
+
+I'll adjust to allow a CLI argument for a path; if provided, I’ll read from it. If not, I'll upload `b"hello world"`. I'll then implement the logic for getting the presign_download URL and checking the status.
+**Updating the patch**
+
+I need to set `headers={"Content-Type": mime}` for the PUT request and add some minimal print statements. Now, I’m turning my attention to crafting the full patch text. 
+
+I’ll update `s3.py` to include imports for `timedelta` and add the presign methods we discussed. It's also important to check for any trailing whitespace to keep things clean. Let's go ahead and write the combined patch efficiently!
+[2025-09-10T16:41:34] codex
+**Generating presign URLs**
+
+I'm generating a random SHA and a suffix for the key. The key structure will follow a specific pattern, and I'm using the Storage class to get a presigned URL for putting an object with a 1-hour expiry. 
+
+I’ll also add a new GET endpoint for presign_download. It will return a presigned URL and expiry for downloading. 
+
+Next, I need to update API.md with new sections, including sample requests and responses. Plus, I will implement a script to handle the presigning process and file uploads, ensuring it follows the requirements.
+[2025-09-10T16:41:34] codex
+**Implementing file uploads**
+
+I’m thinking of creating a small file in the /tmp directory or current dir but prefer to upload bytes directly using `requests.put` with `data=b"hello"`. The requirement mentions a "small local file," but I realize I could use `tempfile.NamedTemporaryFile`, even though it writes to disk, which might not be permitted in CI. To keep it simple and avoid writing, I’ll just upload content in memory. 
+
+I'll adjust to allow a CLI argument for a path; if provided, I’ll read from it. If not, I'll upload `b"hello world"`. I'll then implement the logic for getting the presign_download URL and checking the status.
+[2025-09-10T16:41:34] codex
+**Updating the patch**
+
+I need to set `headers={"Content-Type": mime}` for the PUT request and add some minimal print statements. Now, I’m turning my attention to crafting the full patch text. 
+
+I’ll update `s3.py` to include imports for `timedelta` and add the presign methods we discussed. It's also important to check for any trailing whitespace to keep things clean. Let's go ahead and write the combined patch efficiently!
+[2025-09-10T16:41:34] codex
+
+*** Begin Patch
+*** Update File: shared/storage/s3.py
+@@
+-import hashlib
+-import os
+-from minio import Minio
++import hashlib
++import os
++from datetime import timedelta
++from minio import Minio
+ 
+ 
+ class Storage:
+     def __init__(self):
+         endpoint = os.getenv("S3_ENDPOINT_URL", "http://localhost:9000").replace("http://", "").replace("https://", "")
+@@
+     def get_object_bytes(self, key: str) -> bytes:
+         resp = self.client.get_object(self.bucket, key)
+         try:
+             return resp.read()
+         finally:
+             resp.close()
+             resp.release_conn()
++
++    # Presign helpers
++    def presign_put_url(self, key: str, expiry: int = 3600) -> str:
++        """Return presigned PUT URL for direct upload."""
++        return self.client.presigned_put_object(self.bucket, key, expires=timedelta(seconds=expiry))
++
++    def presign_get_url(self, key: str, expiry: int = 600) -> str:
++        """Return presigned GET URL for temporary download."""
++        return self.client.presigned_get_object(self.bucket, key, expires=timedelta(seconds=expiry))
+*** End Patch
+
+*** Begin Patch
+*** Update File: apps/block0_api/main.py
+@@
+-from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Request
++from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Request, Body
+@@
+ def metrics():
+     data = generate_latest(registry)
+     return Response(content=data, media_type=CONTENT_TYPE_LATEST)
+ 
++
++@app.post("/v0/uploads/presign")
++def presign_upload(payload: dict = Body(...)):
++    """
++    Create a presigned PUT URL for direct upload to S3/MinIO.
++    No DB writes here. Returns object_key and URL.
++    """
++    tenant_id = payload.get("tenant_id")
++    user_id = payload.get("user_id")  # accepted but unused here; validates shape
++    filename = payload.get("filename")
++    mime = payload.get("mime") or "application/octet-stream"
++    if not tenant_id or not filename or user_id is None:
++        raise HTTPException(status_code=400, detail="tenant_id, user_id, filename are required")
++
++    # Random sha-like path id and short suffix to avoid collisions
++    rand_sha = secrets.token_hex(32)  # 64 hex chars
++    suffix = secrets.token_hex(4)     # 8 hex chars
++    object_key = f"{tenant_id}/{rand_sha[:2]}/{rand_sha}/v1/orig/{filename}.{suffix}"
++
++    storage = Storage()
++    url = storage.presign_put_url(object_key, expiry=3600)
++    return JSONResponse({"object_key": object_key, "url": url, "expiry": 3600, "mime": mime})
++
++
++@app.get("/v0/uploads/presign_download")
++def presign_download(key: str, expiry: int = 600):
++    """
++    Generate a temporary presigned GET URL for QA download checks.
++    """
++    if not key:
++        raise HTTPException(status_code=400, detail="key is required")
++    storage = Storage()
++    url = storage.presign_get_url(key, expiry=max(1, min(expiry, 24 * 3600)))
++    return {"url": url, "expiry": expiry}
++
+*** End Patch
+
+*** Begin Patch
+*** Update File: API.md
+@@
+ Base URL: `http://localhost:8000`
+ 
++## POST /v0/uploads/presign
++- JSON body:
++  - `tenant_id` (UUID string, required)
++  - `user_id` (int, required)
++  - `filename` (string, required)
++  - `mime` (string, optional; default `application/octet-stream`)
++
++Returns a presigned PUT URL to upload directly to S3/MinIO. No DB writes.
++
++Response 200:
++```json
++{
++  "object_key": "tenant/ab/abcdef.../v1/orig/file.pdf.1a2b3c4d",
++  "url": "http://minio.local/....",
++  "expiry": 3600,
++  "mime": "application/pdf"
++}
++```
++
++## GET /v0/uploads/presign_download
++Query parameters:
++- `key` (string, required): `object_key` returned by presign.
++- `expiry` (int, optional; seconds, default 600)
++
++Returns a short-lived presigned GET URL to download the object (for QA).
++
++Response 200:
++```json
++{
++  "url": "http://minio.local/....",
++  "expiry": 600
++}
++```
++
+ ## POST /v0/documents/upload
+ - Multipart form-data parameters:
+   - `tenant_id` (UUID, required)
+   - `user_id` (int, required)
+   - `case_ref` (string, optional)
+*** End Patch
+
+*** Begin Patch
+*** Add File: scripts/smoke_presign.py
++import os
++import sys
++import json
++import time
++import requests
++
++\nBASE_URL = os.getenv(\"BASE_URL\", \"http://localhost:8000\")\nTENANT_ID = os.getenv(\"TENANT_ID\", \"11111111-1111-1111-1111-111111111111\")\nUSER_ID = int(os.getenv(\"USER_ID\", \"1\"))\n\n\ndef main():\n    filename = \"hello.txt\"\n    mime = \"text/plain\"\n    body = {\n        \"tenant_id\": TENANT_ID,\n        \"user_id\": USER_ID,\n        \"filename\": filename,\n        \"mime\": mime,\n    }\n\n    # Presign PUT\n    r = requests.post(f\"{BASE_URL}/v0/uploads/presign\", json=body, timeout=10)\n    r.raise_for_status()\n    presign = r.json()\n    put_url = presign[\"url\"]\n    key = presign[\"object_key\"]\n    print(f\"Presigned PUT URL received. key={key}\")\n\n    # Upload small payload (optionally from file path argv[1])\n    data = b\"hello world\\n\"\n    if len(sys.argv) > 1:\n        with open(sys.argv[1], \"rb\") as fh:\n            data = fh.read()\n    put_headers = {\"Content-Type\": mime}\n    r = requests.put(put_url, data=data, headers=put_headers, timeout=30)\n    if r.status_code not in (200, 201):\n        print(f\"PUT failed: {r.status_code} {r.text}\")\n        sys.exit(2)\n    print(\"Upload via presigned URL succeeded.\")\n\n    # Presign GET\n    r = requests.get(f\"{BASE_URL}/v0/uploads/presign_download\", params={\"key\": key}, timeout=10)\n    r.raise_for_status()\n    get_url = r.json()[\"url\"]\n\n    # GET content back\n    r = requests.get(get_url, timeout=30)\n    if r.status_code != 200:\n        print(f\"GET failed: {r.status_code} {r.text}\")\n        sys.exit(3)\n    print(f\"Downloaded {len(r.content)} bytes via presigned GET. OK\")\n\n\n+if __name__ == \"__main__\":\n+    main()\n+\n*** End Patch
+
+Reasoning:
+- Added minimal presign helpers to the existing `Storage` client using MinIO’s `presigned_put_object` and `presigned_get_object` with `timedelta` expiry.
+- Introduced two new API endpoints in `apps/block0_api/main.py`:
+  - `POST /v0/uploads/presign` returns a presigned PUT URL and an `object_key` under `tenant/<sha[:2]>/<sha>/v1/orig/<filename>.<rand8>`. No DB writes occur.
+  - `GET /v0/uploads/presign_download` returns a short-lived presigned GET URL for QA.
+- Updated `API.md` with clear request/response examples for the new endpoints.
+- Added `scripts/smoke_presign.py` that exercises the flow: presign -> PUT upload -> presign download -> GET verify (200).
+- Changes are surgical and do not modify existing upload logic or DB interactions, adhering to current style and using the existing `Storage` class.
+[2025-09-10T16:42:13] tokens used: 3180

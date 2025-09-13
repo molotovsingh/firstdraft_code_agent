@@ -1,0 +1,79 @@
+
+## FirstDraft v2.0 Block0a Audit Report
+
+### 1. API Endpoints
+
+The implemented API in `apps/block0_api/main.py` aligns well with the `API.md` documentation, with a few additions and divergences:
+
+*   **Implemented & Documented:**
+    *   `POST /v0/uploads/presign`
+    *   `GET /v0/uploads/presign_download`
+    *   `POST /v0/uploads/finalize`
+    *   `POST /v0/documents/upload`
+    *   `GET /v0/jobs/{id}`
+    *   `GET /v0/documents/{id}/report.json`
+    *   `GET /v0/documents/{id}/report.md`
+    *   `GET /v0/documents/{id}/processed.json`
+    *   `GET /metrics`
+    *   `GET /v0/credits/balance`
+    *   `GET /v0/credits/ledger`
+    *   `GET /v0/credits/summary`
+*   **Implemented but NOT Documented:**
+    *   `GET /healthz`: A critical health check endpoint.
+    *   `GET /v0/documents`: Lists recent documents for a tenant.
+    *   `POST /v0/documents/{document_id}/reprocess`: Triggers reprocessing of a document.
+
+### 2. Security & Robustness
+
+*   **Validation:** Input validation is present but inconsistent. UUIDs are not always validated for format before use, relying on database-level errors. The `upload_documents` endpoint correctly validates the `quality_mode` enum. Tenant and user ownership is checked, which is good.
+*   **Error Handling:** The API correctly uses `HTTPException` for request-related errors. The worker logs exceptions but could benefit from more structured error reporting (e.g., specific error codes).
+*   **Idempotency:** The `finalize_upload` endpoint has an idempotency guard using the file's SHA256 hash to prevent creating duplicate document records, which is excellent.
+*   **Transactions:** The `upload_documents` endpoint has a loop that commits to the database for each file. If an error occurs midway through a multi-file upload, some files will be committed and others not, leaving the system in an inconsistent state. The entire operation should be a single atomic transaction.
+*   **Foreign Keys:** The database models in `shared/db/models.py` correctly define `ForeignKey` relationships, which helps maintain data integrity at the database level.
+*   **Object Storage:** The use of a staging location for presigned uploads (`finalize_upload`) and then copying to a final, content-addressable location is a robust pattern. However, the cleanup of the staging object is optional and disabled by default.
+
+### 3. Test Coverage
+
+Test coverage is sparse. The existing tests in `tests/test_credits_api.py` only cover the credits-related endpoints and mostly focus on error cases and basic success scenarios with mocked database access.
+
+*   **Gaps:** There are no tests for the most critical and complex API endpoints:
+    *   `POST /v0/documents/upload`
+    *   `POST /v0/uploads/finalize`
+*   **Highest-Value Tests to Add:**
+    1.  **`upload_documents`:** Test successful single and multi-file uploads.
+    2.  **`finalize_upload`:** Test the success path, the idempotency case (re-finalizing the same file), and error handling when the staged object is missing.
+    3.  **Worker Logic:** Unit tests for the OCR and credit finalization logic in `apps/block0_worker/worker.py`.
+
+### 4. Infrastructure
+
+*   **Docker Compose:** The `docker-compose.yml` uses version "3.9", which is modern. However, it lacks health checks for the `api` and `worker` services. The API's `/healthz` endpoint should be used in the `api` service definition.
+*   **Migrations:** There is no automated mechanism in the `docker-compose.yml` to run Alembic database migrations. Migrations must be run manually, which is error-prone. A common pattern is to have an entrypoint script in the `api` or a separate `migrator` service that runs `alembic upgrade head` before the application starts.
+
+### 5. Performance
+
+*   **Memory Usage:** The `upload_documents` endpoint reads the entire file into memory with `await f.read()`. This is a significant performance and scalability risk for large files. The application should stream uploads directly to a temporary file or to the object store.
+*   **Database Queries:** The credits-related endpoints (`/v0/credits/balance`, `/v0/credits/summary`) fetch all credit records for a tenant and perform aggregations in Python. This will become slow as the ledger grows. These calculations should be moved to the database using `SUM` and `GROUP BY` for efficiency.
+
+### 6. Prioritized TODOs
+
+1.  **Fix `upload_documents` Transaction Scope:** Wrap the multi-file processing loop in a single database transaction to ensure atomicity.
+    *   **Effort:** Low
+    *   **Impact:** High (prevents data inconsistency)
+2.  **Add Migration Execution to Startup:** Add a command or entrypoint to `docker-compose.yml` to run `alembic upgrade head` before the API starts.
+    *   **Effort:** Low
+    *   **Impact:** High (ensures DB schema is always correct)
+3.  **Add Tests for `upload` and `finalize`:** Create integration tests for the `POST /v0/documents/upload` and `POST /v0/uploads/finalize` endpoints.
+    *   **Effort:** Medium
+    *   **Impact:** High (improves stability and prevents regressions)
+4.  **Optimize Credit Calculation Queries:** Refactor credit summary/balance endpoints to use SQL `SUM()` and `GROUP BY` instead of loading all rows into memory.
+    *   **Effort:** Low
+    *   **Impact:** Medium (improves performance and scalability)
+5.  **Add Health Checks to Services:** Add `healthcheck` definitions to the `api` and `worker` services in `docker-compose.yml`.
+    *   **Effort:** Low
+    *   **Impact:** Medium (improves orchestration robustness)
+6.  **Stream File Uploads:** Modify the `upload_documents` endpoint to stream file content to storage instead of reading it all into memory.
+    *   **Effort:** Medium
+    *   **Impact:** Medium (improves performance for large files)
+7.  **Document Missing API Endpoints:** Update `API.md` to include the `/healthz`, `/v0/documents`, and `/v0/documents/{document_id}/reprocess` endpoints.
+    *   **Effort:** Low
+    *   **Impact:** Low (improves documentation quality)

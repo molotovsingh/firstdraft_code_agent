@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="text-xl font-semibold mb-4">Credits</h2>
+<div class="bg-white border rounded p-4 mb-4">
+  <div class="text-sm">Balance: <span class="font-semibold">{{ bal.balance }}</span> ({{ bal.count }} entries)</div>
+  <div class="text-xs text-slate-500">Tenant {{ tenant_id }}</div>
+  </div>
+
+<table class="min-w-full bg-white border rounded">
+  <thead class="text-left text-sm bg-slate-100">
+    <tr><th class="p-2">ID</th><th class="p-2">User</th><th class="p-2">Delta</th><th class="p-2">Reason</th><th class="p-2">At</th></tr>
+  </thead>
+  <tbody class="text-sm">
+    {% for e in ledger %}
+    <tr class="border-t">
+      <td class="p-2">{{ e.id }}</td>
+      <td class="p-2">{{ e.user_id }}</td>
+      <td class="p-2">{{ e.delta }}</td>
+      <td class="p-2">{{ e.reason }}</td>
+      <td class="p-2">{{ e.created_at }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
+

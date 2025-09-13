@@ -101,9 +101,28 @@ def compute_metrics_and_warnings(mime: str, original_bytes: Optional[bytes], ocr
 
 
 def estimate_credits(mime: str, size_bytes: int) -> int:
-    # Simple heuristic: per 1MB ~ 10 credits; images slightly more expensive
+    """Size-based rough estimate used pre-processing."""
     mb = max(1, int((size_bytes + 1_000_000 - 1) / 1_000_000))
     base = 10 * mb
-    if mime.lower().startswith("image/"):
+    if (mime or "").lower().startswith("image/"):
         base += 5
-    return base
+    return max(1, int(base))
+
+
+def estimate_actual_credits(mime: str, size_bytes: int, metrics: dict | None) -> int:
+    """
+    Minimal actualization heuristic for Block 0:
+    - Prefer page_count if present: 8 credits/page for PDFs; 10/page for images.
+    - Fallback to size-based estimate_credits.
+    """
+    try:
+        if isinstance(metrics, dict):
+            pc = metrics.get("page_count")
+            if isinstance(pc, int) and pc > 0:
+                if (mime or "").lower() == "application/pdf":
+                    return max(1, int(8 * pc))
+                if (mime or "").lower().startswith("image/"):
+                    return max(1, int(10 * pc))
+    except Exception:
+        pass
+    return estimate_credits(mime or "application/octet-stream", size_bytes)

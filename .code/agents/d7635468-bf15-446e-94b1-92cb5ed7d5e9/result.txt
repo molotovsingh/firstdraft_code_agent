@@ -1,0 +1,38 @@
+Perfect! All tests are passing. Let me write a summary of the implemented changes:
+
+## Summary of Implemented Changes
+
+Successfully implemented all requested robustness and DX improvements:
+
+### 1. **Pydantic Models for Validation** 
+- Added `PresignRequest` and `FinalizeRequest` models with strict validation
+- UUID validation for `tenant_id`
+- Non-empty filename validation
+- Optional MIME type with default "application/octet-stream"
+
+### 2. **New API Endpoints**
+- `POST /v0/uploads/presign`: Returns presigned URL for direct S3 uploads
+- `POST /v0/uploads/finalize`: Finalizes upload with SHA256 deduplication
+- `GET /v0/version`: Returns app version and git SHA
+
+### 3. **Unit Tests**
+- Created comprehensive test suite covering:
+  - Happy paths for presign and finalize
+  - Invalid tenant/user scenarios
+  - Missing object on finalize
+  - Idempotent finalize with duplicate SHA256
+  - Validation errors
+  - DB rollback on failures
+
+### 4. **DB Transaction Safety**
+- Added `db.flush()` calls after creating FKs in upload and finalize
+- Wrapped operations in try/except with `db.rollback()` on failures
+- Prevents partial writes on errors
+
+### 5. **Additional Improvements**
+- Extended Storage class with `generate_presigned_url()` and `object_exists()`
+- Fixed syntax error in worker.py
+- Updated to Pydantic V2 field validators
+- Added pytest to requirements.txt
+
+All 16 tests passing successfully with minimal, backwards-compatible changes to the existing codebase.

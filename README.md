@@ -32,11 +32,31 @@ curl http://localhost:8000/v0/jobs/<job_id>
 
 # 6) Fetch report
 curl http://localhost:8000/v0/documents/<document_id>/report.json
+
+# Optional: CI-style smoke test (presign → finalize → worker) inside Docker network
+./scripts/ci_smoke.sh
 ```
 
 Notes:
-- OCR is stubbed by default; the worker emits placeholder text and quality warnings. Swap in Tesseract/OCRmyPDF later.
+- Default OCR provider is tesseract. To disable OCR for dev, set `OCR_PROVIDER=stub`. For PDF-focused OCR, set `OCR_PROVIDER=ocrmypdf`.
 - Storage is S3-compatible (MinIO locally). Content addressing uses SHA-256 of the original bytes.
 - Credits ledger is included with a simple estimation stub and finalization hook.
+- If your host cannot resolve `minio`, use the in-network smoke helper `scripts/smoke_in_network.sh` (also used by `ci_smoke.sh`).
+
+## Using uv (faster local setup)
+- uv venv .venv
+- uv pip install -r requirements.txt
+- uv run pytest -q
+- uv run ./scripts/ci_smoke.sh
 
 See `API.md` and `RUNBOOK.md` for details.
+
+## Agent Workflow
+
+This repo uses a strict multi‑agent process:
+
+- Code: orchestrates, orders work, reviews, and files bugfix tasks (no coding)
+- Claude: implementation and bugfixes
+- Gemini: repo reading and suggestions
+
+Start with `AGENTS.md` for roles, invocation patterns, and guardrails.

@@ -239,6 +239,13 @@ Each block is designed for standalone potential while integrating seamlessly:
 - Modular hiring strategy post-MVP
 - Iterative schema evolution with migration support
 - Cross-block integration testing essential
+- Start Small, Scale Smart: Ship the smallest valuable slice, measure real usage, and scale only where data demands. Prefer simple horizontal designs; scale modularly based on observed load.
+- Baby Steps, Avoid Overengineering: Choose the simplest design that passes tests and satisfies current requirements. Add complexity only with a concrete, near‑term need and a rollback plan.
+
+### Phase Naming (Consistency)
+- Architecture docs (ADRs) refer to conceptual blocks as "Block N".
+- Execution phases are labeled "Block N, Phase A/B/C" in prose. Short form like "Block 0a" may appear in UI labels, tests, or commits where brevity helps.
+- Current usage of "Block 0a" denotes the first executable slice of Block 0 (OCR + normalization + warnings).
 
 ## 11. Risk Management
 

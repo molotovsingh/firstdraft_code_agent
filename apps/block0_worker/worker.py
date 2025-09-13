@@ -4,12 +4,19 @@ from datetime import datetime
 import time
 from celery import Celery
 from structlog import get_logger
-from prometheus_client import Counter, Histogram, start_http_server
+from structlog.contextvars import bind_contextvars, clear_contextvars
+from prometheus_client import Counter, Histogram, make_wsgi_app
+from wsgiref.simple_server import make_server
+from threading import Thread
+try:
+    from shared.config.settings import settings as _settings
+except Exception:
+    _settings = None
 
 from shared.db.session import SessionLocal
 from shared.db import models
 from shared.db.models import ProcessingStatus
-from shared.quality.metrics import compute_metrics_and_warnings
+from shared.quality.metrics import compute_metrics_and_warnings, estimate_actual_credits
 from shared.storage.s3 import Storage
 from PIL import Image
 import io
@@ -18,6 +25,72 @@ import tempfile
 import subprocess
 from pytesseract import Output
 from shared.quality.normalize import deskew_image_bytes
+from shared.ocr.adapters.tesseract import TesseractAdapter
+from shared.ocr.adapters.ocrmypdf import OCRmyPDFAdapter
+from shared.ocr.adapters.base import OCRResult
+
+
+def _ocr_image_bytes(original_bytes: bytes, lang: str):
+    warnings: list[str] = []
+    metrics: dict = {}
+    used_bytes = original_bytes
+    rotated_bytes, applied_deg = deskew_image_bytes(original_bytes)
+    if abs(applied_deg) > 0.0:
+        warnings.append(f"Auto-deskew applied (~{applied_deg:.1f}°)")
+        used_bytes = rotated_bytes
+    pil_img = Image.open(io.BytesIO(used_bytes))
+    text = pytesseract.image_to_string(pil_img, lang=lang) or ""
+    # Confidence (average over valid words)
+    try:
+        data = pytesseract.image_to_data(pil_img, lang=lang, output_type=Output.DICT)
+        confs = [int(c) for c in data.get('conf', []) if c not in ("-1", "-")]
+        conf_vals = [c for c in confs if c >= 0]
+        if conf_vals:
+            avg_conf = sum(conf_vals) / len(conf_vals)
+            metrics["ocr_confidence_avg"] = round(float(avg_conf) / 100.0, 3)
+    except Exception:
+        pass
+    return text, used_bytes, metrics, warnings
+
+
+def _ocr_pdf_bytes(original_bytes: bytes, lang: str):
+    warnings: list[str] = []
+    text = ""
+    with tempfile.TemporaryDirectory() as td:
+        in_pdf = f"{td}/in.pdf"
+        out_pdf = f"{td}/out.pdf"
+        sidecar = f"{td}/out.txt"
+        with open(in_pdf, "wb") as f:
+            f.write(original_bytes)
+        cmd = [
+            "ocrmypdf",
+            "--language", lang,
+            "--sidecar", sidecar,
+            "--skip-text",
+            in_pdf,
+            out_pdf,
+        ]
+        try:
+            subprocess.run(cmd, check=True, capture_output=True, timeout=180)
+            try:
+                with open(sidecar, "r", encoding="utf-8", errors="ignore") as sf:
+                    text = sf.read()
+            except FileNotFoundError:
+                warnings.append("PDF OCR produced no sidecar text")
+        except subprocess.CalledProcessError as e:
+            warnings.append("PDF OCR failed; see logs")
+            # Throttle noisy logs
+            if _should_log("ocrmypdf_failed"):
+                try:
+                    err = e.stderr.decode(errors="ignore") if e.stderr else ""
+                except Exception:
+                    err = ""
+                log.error("ocrmypdf_failed", returncode=e.returncode, stderr=err)
+        except subprocess.TimeoutExpired:
+            warnings.append("PDF OCR timed out")
+            if _should_log("ocrmypdf_timeout"):
+                log.error("ocrmypdf_timeout")
+    return text, warnings
 
 log = get_logger()
 
@@ -29,11 +102,32 @@ celery_app.conf.broker_url = CELERY_BROKER_URL
 celery_app.conf.result_backend = CELERY_RESULT_BACKEND
 
 # Optional Prometheus metrics server (disabled unless METRICS_PORT is set)
+def _start_metrics_and_health_http(port: int):
+    """Start a lightweight HTTP server exposing /metrics and /health on given port."""
+    metrics_app = make_wsgi_app()
+
+    def app(environ, start_response):
+        path = environ.get('PATH_INFO') or '/'
+        if path == '/metrics':
+            return metrics_app(environ, start_response)
+        if path == '/health':
+            start_response('200 OK', [('Content-Type', 'text/plain; charset=utf-8')])
+            return [b'ok']
+        start_response('404 Not Found', [('Content-Type', 'text/plain; charset=utf-8')])
+        return [b'not found']
+
+    def _serve():
+        with make_server('0.0.0.0', port, app) as httpd:
+            log.info("worker_http_server_started", port=httpd.server_port)
+            httpd.serve_forever()
+
+    th = Thread(target=_serve, daemon=True)
+    th.start()
+
 try:
-    _metrics_port = os.getenv("METRICS_PORT")
+    _metrics_port = os.getenv("METRICS_PORT") or (str(_settings.metrics_port) if _settings and _settings.metrics_port else None)
     if _metrics_port:
-        start_http_server(int(_metrics_port))
-        log.info("worker_metrics_server_started", port=_metrics_port)
+        _start_metrics_and_health_http(int(_metrics_port))
 except Exception:
     log.exception("worker_metrics_server_failed")
 
@@ -67,6 +161,7 @@ def process_document(job_id: str):
         if job is None:
             log.error("job_not_found", job_id=job_id)
             return
+        bind_contextvars(job_id=str(job.id))
         job.status = ProcessingStatus.running
         job.started_at = datetime.utcnow()
         job.steps = ["normalize", "ocr", "quality", "finalize"]
@@ -84,6 +179,8 @@ def process_document(job_id: str):
 
         # Minimal OCR implementation: images only (ENG). PDFs get a placeholder warning.
         doc = db.get(models.Document, job.document_id)
+        if doc:
+            bind_contextvars(document_id=str(doc.id), tenant_id=str(doc.tenant_id))
         storage = Storage()
         ocr_text = ""
         metrics = {}
@@ -92,71 +189,79 @@ def process_document(job_id: str):
         try:
             original_bytes = storage.get_object_bytes(ver.storage_uri)
             t0 = time.perf_counter()
-            if doc.mime and doc.mime.lower().startswith("image/"):
-                # Optional auto-deskew if needed
-                lang = os.getenv("OCR_LANG", "eng")
-                used_bytes = original_bytes
-                # Try deskew; if applied, re-run OCR on rotated image
-                rotated_bytes, applied_deg = deskew_image_bytes(original_bytes)
-                if abs(applied_deg) > 0.0:
-                    warnings = (warnings or []) + [f"Auto-deskew applied (~{applied_deg:.1f}°)"]
-                    used_bytes = rotated_bytes
-                pil_img = Image.open(io.BytesIO(used_bytes))
-                # Text
-                text = pytesseract.image_to_string(pil_img, lang=lang)
-                ocr_text = text or ""
-                # Confidence (average over valid words)
-                try:
-                    data = pytesseract.image_to_data(pil_img, lang=lang, output_type=Output.DICT)
-                    confs = [int(c) for c in data.get('conf', []) if c not in ("-1", "-")]
-                    conf_vals = [c for c in confs if c >= 0]
-                    if conf_vals:
-                        avg_conf = sum(conf_vals) / len(conf_vals)
-                        # put into metrics after computation below
-                        metrics = metrics or {}
-                        metrics["ocr_confidence_avg"] = round(float(avg_conf) / 100.0, 3)
-                except Exception:
-                    # ignore confidence errors but continue
-                    pass
-                # update original_bytes for metrics calculation later
-                original_bytes = used_bytes
-            elif doc.mime == "application/pdf":
-                # Minimal PDF OCR via ocrmypdf sidecar text
-                lang = os.getenv("OCR_LANG", "eng")
-                with tempfile.TemporaryDirectory() as td:
-                    in_pdf = f"{td}/in.pdf"
-                    out_pdf = f"{td}/out.pdf"
-                    sidecar = f"{td}/out.txt"
-                    with open(in_pdf, "wb") as f:
-                        f.write(original_bytes)
-                    cmd = [
-                        "ocrmypdf",
-                        "--language", lang,
-                        "--sidecar", sidecar,
-                        "--skip-text",
-                        in_pdf,
-                        out_pdf,
-                    ]
-                    try:
-                        subprocess.run(cmd, check=True, capture_output=True)
+            # Determine provider and languages
+            provider = (os.getenv("OCR_PROVIDER", "tesseract") or "tesseract").strip().lower()
+            lang_cfg = getattr(_settings, "ocr_lang", None) or os.getenv("OCR_LANG", "eng")
+            # Accept comma or plus separated lists
+            languages = [p.strip() for p in lang_cfg.replace("+", ",").split(",") if p.strip()]
+
+            quality_mode = (os.getenv("QUALITY_MODE", "recommended") or "recommended").strip().lower()
+            if provider == "stub":
+                warnings = (warnings or []) + ["OCR disabled (stub provider)"]
+                ocr_text = ""
+            else:
+                if doc.mime and doc.mime.lower().startswith("image/"):
+                    # Deskew for recommended mode only
+                    if quality_mode != "budget":
+                        rotated_bytes, applied_deg = deskew_image_bytes(original_bytes)
+                        if abs(applied_deg) > 0.0:
+                            warnings.append(f"Auto-deskew applied (~{applied_deg:.1f}°)")
+                            original_bytes = rotated_bytes
+                    # Budget mode: restrict to first language for speed
+                    if quality_mode == "budget" and languages:
+                        languages = [languages[0]]
+                    # Optional speed knobs via settings/env
+                    oem_env = os.getenv("OCR_OEM")
+                    psm_env = os.getenv("OCR_PSM")
+                    oem = int(oem_env) if oem_env and oem_env.isdigit() else getattr(_settings, "ocr_oem", None)
+                    psm = int(psm_env) if psm_env and psm_env.isdigit() else getattr(_settings, "ocr_psm", None)
+                    extra = os.getenv("OCR_TESSERACT_EXTRA") or getattr(_settings, "ocr_tesseract_extra", None)
+                    # If budget mode and no explicit values, choose lighter defaults
+                    if quality_mode == "budget":
+                        oem = oem if oem is not None else 1  # LSTM only
+                        psm = psm if psm is not None else 6  # Assume a single uniform block of text
+                    t = TesseractAdapter(oem=oem, psm=psm, extra_config=extra)
+                    res: OCRResult = t.process(original_bytes, doc.mime or "image/unknown", languages=languages)
+                    ocr_text = res.combined_text
+                    # Confidence metric if available will be recomputed by metrics module as well
+                elif (doc.mime or "").lower() == "application/pdf":
+                    # Budget mode: restrict to first language and shorter timeout
+                    if quality_mode == "budget" and languages:
+                        languages = [languages[0]]
+                    # Optional extra flags for ocrmypdf
+                    extra_pdf: list[str] = []
+                    # Always consider OCR_OCRMYPDF_EXTRA
+                    extra_env = os.getenv("OCR_OCRMYPDF_EXTRA") or getattr(_settings, "ocr_ocrmypdf_extra", None)
+                    if extra_env:
                         try:
-                            with open(sidecar, "r", encoding="utf-8", errors="ignore") as sf:
-                                ocr_text = sf.read()
-                        except FileNotFoundError:
-                            warnings = (warnings or []) + ["PDF OCR produced no sidecar text"]
-                            ocr_text = ""
-                    except subprocess.CalledProcessError as e:
-                        warnings = (warnings or []) + ["PDF OCR failed; see logs"]
-                        log.error("ocrmypdf_failed", returncode=e.returncode, stderr=e.stderr.decode(errors="ignore"))
-                        ocr_text = ""
+                            extra_pdf += [p for p in extra_env.split(' ') if p]
+                        except Exception:
+                            pass
+                    # Add recommended-only extras if not in budget mode
+                    if quality_mode != "budget":
+                        extra_reco = os.getenv("OCR_OCRMYPDF_RECOMMENDED") or getattr(_settings, "ocr_ocrmypdf_recommended", None)
+                        if extra_reco:
+                            try:
+                                extra_pdf += [p for p in extra_reco.split(' ') if p]
+                            except Exception:
+                                pass
+                    p = OCRmyPDFAdapter(
+                        timeout_seconds=(90 if quality_mode == "budget" else 180),
+                        fast_mode=(quality_mode == "budget"),
+                        tesseract_timeout=(60 if quality_mode == "budget" else None),
+                        extra_args=extra_pdf,
+                    )
+                    res: OCRResult = p.process(original_bytes, "application/pdf", languages=languages)
+                    ocr_text = res.combined_text
+                else:
+                    warnings = (warnings or []) + [f"Unsupported MIME for OCR at this stage: {doc.mime}"]
+                    ocr_text = ""
             # Observe duration
             OCR_DURATION_SECONDS.labels(mime=(doc.mime or "unknown").lower()).observe(time.perf_counter() - t0)
-        else:
-            warnings = (warnings or []) + [f"Unsupported MIME for OCR at this stage: {doc.mime}"]
-            ocr_text = ""
         except Exception as e:
             warnings = (warnings or []) + [f"OCR error: {e}"]
-            log.exception("ocr_failed", job_id=job_id)
+            if _should_log("ocr_failed"):
+                log.exception("ocr_failed", job_id=job_id)
 
         # Store OCR text as object for consistency
         tenant_id = str(doc.tenant_id)
@@ -178,16 +283,45 @@ def process_document(job_id: str):
         ver.ocr_text_uri = ocr_key
         db.commit()
 
-        # Finalize credits (replace estimate with actual if needed)
+        # Finalize credits: compensate estimate and record actual
         estimate_credit = (
             db.query(models.Credit)
             .filter(models.Credit.job_id == job.id, models.Credit.is_estimate == True)
             .first()
         )
         if estimate_credit:
-            # In stub, actual == estimate
-            estimate_credit.is_estimate = False
-            db.commit()
+            try:
+                # Compute a simple actual cost for now (same heuristic as estimate)
+                # Inputs available: mime, bytes length (from storage), metrics (page_count, density)
+                actual = estimate_actual_credits(doc.mime or "application/octet-stream", len(original_bytes or b""), metrics)
+
+                # 1) Reverse the earlier estimate (credit back)
+                reversal = models.Credit(
+                    tenant_id=estimate_credit.tenant_id,
+                    user_id=estimate_credit.user_id,
+                    delta=+abs(estimate_credit.delta),
+                    reason="estimate_reversal",
+                    job_id=job.id,
+                    is_estimate=False,
+                )
+                db.add(reversal)
+
+                # 2) Charge actual
+                actual_row = models.Credit(
+                    tenant_id=estimate_credit.tenant_id,
+                    user_id=estimate_credit.user_id,
+                    delta=-abs(int(actual)),
+                    reason="actual",
+                    job_id=job.id,
+                    is_estimate=False,
+                )
+                db.add(actual_row)
+
+                # Mark the original estimate row closed
+                estimate_credit.is_estimate = False
+                db.commit()
+            except Exception:
+                log.exception("credit_finalization_failed", job_id=job_id)
 
         job.status = ProcessingStatus.succeeded
         job.finished_at = datetime.utcnow()
@@ -199,7 +333,8 @@ def process_document(job_id: str):
             PAGES_PROCESSED_TOTAL.labels(mime=(doc.mime or "unknown").lower()).inc(page_count)
         log.info("job_succeeded", job_id=job_id)
     except Exception as e:
-        log.exception("job_failed", job_id=job_id)
+        if _should_log("job_failed"):
+            log.exception("job_failed", job_id=job_id)
         job = db.get(models.ProcessingJob, uuid.UUID(job_id)) if 'job' in locals() else None
         if job:
             job.status = ProcessingStatus.failed
@@ -207,5 +342,32 @@ def process_document(job_id: str):
             job.finished_at = datetime.utcnow()
             db.commit()
         JOBS_PROCESSED_TOTAL.labels(status="failed").inc()
+        # Compensate estimated credits on failure (refund)
+        try:
+            if job:
+                estimate_credit = (
+                    db.query(models.Credit)
+                    .filter(models.Credit.job_id == job.id, models.Credit.is_estimate == True)
+                    .first()
+                )
+                if estimate_credit:
+                    refund = models.Credit(
+                        tenant_id=estimate_credit.tenant_id,
+                        user_id=estimate_credit.user_id,
+                        delta=+abs(estimate_credit.delta),
+                        reason="refund_failure",
+                        job_id=job.id,
+                        is_estimate=False,
+                    )
+                    db.add(refund)
+                    estimate_credit.is_estimate = False
+                    db.commit()
+        except Exception:
+            if _should_log("credit_refund_failed"):
+                log.exception("credit_refund_failed", job_id=job_id)
     finally:
+        try:
+            clear_contextvars()
+        except Exception:
+            pass
         db.close()

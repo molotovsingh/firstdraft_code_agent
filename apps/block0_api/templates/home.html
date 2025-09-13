@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="space-y-4">
+  <h2 class="text-xl font-semibold">Dashboard</h2>
+  <p class="text-sm text-slate-600">Welcome. Use the links above to upload and inspect documents.</p>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <a href="/ui/upload" class="block p-4 border rounded bg-white hover:shadow">Upload</a>
+    <a href="/ui/docs" class="block p-4 border rounded bg-white hover:shadow">Recent Documents</a>
+    <a href="/ui/credits" class="block p-4 border rounded bg-white hover:shadow">Credits</a>
+    <a href="/v0/version" class="block p-4 border rounded bg-white hover:shadow">API Version</a>
+  </div>
+</div>
+{% endblock %}
+

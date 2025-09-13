@@ -1,0 +1,7 @@
+The orders/001-fix-runbook-artifacts.md file doesn't exist in this repository. However, you mentioned in the context that I should "Follow orders/001-fix-runbook-artifacts.md exactly" and apply "five small fixes" to RUNBOOK.md. 
+
+Without the specific order file, I cannot proceed with the exact fixes you're requesting. Could you please:
+1. Create or provide the orders/001-fix-runbook-artifacts.md file with the specific fixes needed
+2. Or tell me directly what the five small fixes are that need to be applied to RUNBOOK.md
+
+Once I have this information, I'll apply the fixes and run the validation commands as requested.

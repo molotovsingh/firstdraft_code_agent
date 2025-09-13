@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="text-xl font-semibold mb-4">Upload</h2>
+<form class="space-y-3 bg-white p-4 border rounded" action="/v0/documents/upload" method="post" enctype="multipart/form-data">
+  <input type="hidden" name="tenant_id" value="{{ tenant_id }}" />
+  <input type="hidden" name="user_id" value="{{ user_id }}" />
+  <div>
+    <label class="block text-sm mb-1">Files</label>
+    <input class="block w-full" type="file" name="files" multiple required />
+  </div>
+  <div>
+    <label class="block text-sm mb-1">Quality Mode</label>
+    <select name="quality_mode" class="border rounded px-2 py-1">
+      <option value="recommended">recommended</option>
+      <option value="budget">budget</option>
+    </select>
+  </div>
+  <button class="px-3 py-1.5 bg-slate-900 text-white rounded" type="submit">Upload</button>
+</form>
+<p class="text-xs text-slate-500 mt-3">This form uses the legacy upload path for simplicity in dev.</p>
+{% endblock %}
+

@@ -1,0 +1,62 @@
+Now I'll create the unified diff patch to add retry logic with exponential backoff around the subprocess.run call:
+
+```diff
+>>>PATCH
+--- a/shared/ocr/adapters/ocrmypdf.py
++++ b/shared/ocr/adapters/ocrmypdf.py
+@@ -1,6 +1,7 @@
+ from typing import List, Optional
+ from .base import OCRAdapter, OCRResult, PageText
+ import tempfile
+ import subprocess
+ from pypdf import PdfReader
+ import io
++import time
+ 
+ 
+ class OCRmyPDFAdapter(OCRAdapter):
+@@ -44,12 +45,24 @@ class OCRmyPDFAdapter(OCRAdapter):
+             if self.extra_args:
+                 cmd += list(self.extra_args)
+             cmd += [in_pdf, out_pdf]
+-            try:
+-                subprocess.run(cmd, check=True, capture_output=True, timeout=self.timeout_seconds)
+-            except subprocess.CalledProcessError as e:
+-                # Return warning text in combined output to be surfaced upstream as a warning
+-                msg = (e.stderr.decode(errors="ignore") if e.stderr else "ocrmypdf failed")
+-                page = PageText(index=0, text="", confidence=0.0, language=lang)
+-                return OCRResult(pages=[page], combined_text="")
+-            except subprocess.TimeoutExpired:
+-                page = PageText(index=0, text="", confidence=0.0, language=lang)
+-                return OCRResult(pages=[page], combined_text="")
++            
++            # Retry logic with exponential backoff (3 attempts total)
++            for attempt in range(3):
++                try:
++                    subprocess.run(cmd, check=True, capture_output=True, timeout=self.timeout_seconds)
++                    break  # Success, exit retry loop
++                except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as e:
++                    if attempt == 2:  # Final attempt failed
++                        # Return empty result on final failure (preserve existing behavior)
++                        page = PageText(index=0, text="", confidence=0.0, language=lang)
++                        return OCRResult(pages=[page], combined_text="")
++                    else:
++                        # Wait before retry with exponential backoff: 0.5s, 1.0s
++                        wait_time = 0.5 * (2 ** attempt)
++                        time.sleep(wait_time)
+ 
+             text = ""
+             try:
+<<<PATCH
+```
+
+This patch:
+
+1. **Adds retry logic**: Wraps the `subprocess.run()` call in a loop that attempts up to 3 times total
+2. **Implements exponential backoff**: Uses `0.5 * (2 ** attempt)` which gives 0.5s after first failure, 1.0s after second failure  
+3. **Preserves existing behavior**: On final failure, returns the same empty `OCRResult` as before
+4. **Handles both exception types**: Catches both `CalledProcessError` and `TimeoutExpired` for retry
+5. **Minimal changes**: Only adds the retry wrapper and `import time`, no other logic changes
+6. **No worker changes**: This is entirely within the adapter, preserving the existing interface
+
+The implementation is safe and maintains backward compatibility while adding resilience to transient failures.

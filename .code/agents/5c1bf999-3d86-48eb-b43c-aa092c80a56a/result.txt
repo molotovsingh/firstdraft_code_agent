@@ -1,0 +1,4 @@
+**Fixed RUNBOOK.md formatting:**
+- Aligned bullets at lines 9 and 81 (removed leading spaces)
+- Replaced literal `\n+###` artifacts with proper blank lines + headings at lines 85 and 116
+- Validated: `grep -n "\\n\\n+###" RUNBOOK.md` returns empty

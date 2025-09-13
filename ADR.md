@@ -17,6 +17,17 @@ This file documents significant architectural decisions made during the developm
 
 ---
 
+## Engineering Mantras
+
+- Start Small, Scale Smart: Ship the smallest valuable slice, measure real usage, and scale only where data demands. Favor horizontal simplicity; scale via modular blocks and observed load, not assumptions.
+- Baby Steps, Avoid Overengineering: Choose the simplest design that passes tests and meets today’s requirements. Add complexity only with a concrete, near‑term need and a rollback plan.
+
+## Naming Conventions
+
+- Architecture: Refer to blocks conceptually as "Block N" in ADRs (no letters).
+- Execution Phases: Refer to delivery slices as "Block N, Phase A/B/C" in prose. When space is tight (e.g., UI labels, commit messages), "Block N a/b/c" (e.g., "Block 0a") is acceptable.
+- Context: "Block 0a" denotes the first executable slice of Block 0 (OCR + normalization + warnings). Future phases may be "Block 0, Phase B/C" (or 0b/0c in short form). ADRs remain letterless for clarity.
+
 ## ADR-0001: Modular "Lego Blocks" Architecture
 **Date:** 2025-09-07  
 **Status:** Accepted  

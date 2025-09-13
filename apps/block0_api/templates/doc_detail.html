@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="text-xl font-semibold mb-4">Document {{ doc_id }}</h2>
+<div class="bg-white border rounded p-4 space-y-2">
+  <div><span class="font-medium">Filename:</span> {{ doc.orig_filename }}</div>
+  <div><span class="font-medium">MIME:</span> {{ doc.mime }}</div>
+  <div><span class="font-medium">Latest Version:</span> {{ version }}</div>
+</div>
+
+<div class="mt-4 flex gap-3 text-sm">
+  <a class="text-blue-600 hover:underline" href="/v0/documents/{{ doc_id }}/processed.json" target="_blank">Processed JSON</a>
+  <a class="text-blue-600 hover:underline" href="/v0/documents/{{ doc_id }}/report.md" target="_blank">Report MD</a>
+  {% if download_url %}
+  <a class="text-blue-600 hover:underline" href="{{ download_url }}" target="_blank">Download Original</a>
+  {% endif %}
+  
+</div>
+
+<h3 class="mt-6 mb-2 font-semibold">Summary</h3>
+<pre class="bg-white border rounded p-3 overflow-x-auto text-sm">{{ report_md }}</pre>
+{% endblock %}

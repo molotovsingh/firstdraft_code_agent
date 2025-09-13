@@ -1,0 +1,41 @@
+name: Implementation Task
+description: Order Claude to implement a change
+title: "feat: <short task>"
+labels: ["type:feature", "agent:claude"]
+assignees: []
+body:
+  - type: textarea
+    id: task
+    attributes:
+      label: Task
+      description: Clear, bounded description of the change to implement.
+      placeholder: Implement <feature> with constraints…
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+      description: Bullet list; each item must be testable.
+      placeholder: |
+        - API endpoint returns …
+        - DB migration applied …
+    validations:
+      required: true
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Constraints
+      description: Interfaces, perf, security, tenancy, backwards compatibility.
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validation
+      description: Exact commands (tests, smoke) to prove correctness.
+      placeholder: ./scripts/ci_smoke.sh
+  - type: textarea
+    id: outofscope
+    attributes:
+      label: Out of Scope
+      description: List to prevent scope creep.
+

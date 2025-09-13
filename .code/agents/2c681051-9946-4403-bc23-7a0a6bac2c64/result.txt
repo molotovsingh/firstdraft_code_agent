@@ -1,0 +1,130 @@
+
+
+
+# FirstDraft v2.0 Repo Read-Through Report
+
+**Date:** 2025-09-13
+**Agent:** Gemini
+**Focus:** Block 0a (FastAPI API + Celery worker) and shared libraries.
+
+This report provides an analysis of the FirstDraft v2.0 repository, focusing on its architecture, entrypoints, data model, interfaces, risks, and a suggested improvement plan.
+
+## 1. Architecture Map
+
+The project follows a modular "Lego Blocks" architecture, as outlined in `ADR-0001`. The initial focus is on **Block 0a**, which consists of a FastAPI application and a Celery worker.
+
+*   **`apps/block0_api`**: A FastAPI application that serves as the primary entrypoint for the system. It handles document uploads, job creation, and status tracking. It also provides a minimal UI for development and testing.
+*   **`apps/block0_worker`**: A Celery worker responsible for the asynchronous processing of documents. This includes OCR, quality assessment, and other normalization tasks.
+*   **`shared/`**: A collection of shared libraries used by both the API and the worker. This includes:
+    *   **`shared/db`**: SQLAlchemy models and database session management.
+    *   **`shared/storage`**: An S3 client for object storage.
+    *   **`shared/quality`**: Modules for computing quality metrics and warnings.
+    *   **`shared/ocr`**: Adapters for different OCR engines (Tesseract, OCRmyPDF).
+    *   **`shared/config`**: Centralized settings management.
+    *   **`shared/llm_service`**: A planned service for interacting with Large Language Models (not yet implemented).
+
+The architecture is designed for scalability and maintainability, with a clear separation of concerns between the API, worker, and shared components.
+
+## 2. Entrypoints
+
+### Services
+
+*   **API (`apps/block0_api/main.py`)**: The main FastAPI application. It can be run directly with `uvicorn` or via the provided Docker Compose configuration.
+*   **Worker (`apps/block0_worker/worker.py`)**: The Celery worker. It is started via the `celery` command-line interface, also managed by Docker Compose.
+
+### Docker Compose
+
+The `infra/docker-compose.yml` file defines the following services:
+
+*   `api`: The FastAPI application.
+*   `worker`: The Celery worker.
+*   `postgres`: The PostgreSQL database.
+*   `redis`: The Redis message broker for Celery.
+*   `minio`: An S3-compatible object storage service.
+*   `migrator`: A one-shot service that runs database migrations on startup.
+
+### Scripts
+
+The `scripts/` directory contains several utility scripts for development and testing, including:
+
+*   `bootstrap_dev.py`: Initializes the development environment with a tenant and users.
+*   `smoke_*.py`: A suite of smoke tests for verifying the health and functionality of the system.
+*   `batch_upload.py`: A script for uploading multiple documents.
+
+## 3. Data Model
+
+The data model is defined in `shared/db/models.py` using SQLAlchemy. The key models are:
+
+*   **`Tenant`**: Represents an enterprise client.
+*   **`User`**: Represents a user within a tenant.
+*   **`Document`**: Represents an uploaded document, including its original filename, MIME type, and a SHA256 hash of its content.
+*   **`DocumentVersion`**: Represents a specific version of a document, with links to its storage location and OCR results.
+*   **`ProcessingJob`**: Represents a job for processing a document, including its status and any errors.
+*   **`Credit`**: Tracks credit usage for billing purposes.
+
+The database schema is well-structured and follows standard relational database design principles. The use of UUIDs for primary keys and foreign keys ensures global uniqueness.
+
+## 4. Interfaces
+
+### REST API
+
+The FastAPI application exposes a RESTful API under the `/v0/` prefix. The key endpoints are:
+
+*   **`/v0/uploads/presign`**: Creates a presigned URL for direct-to-S3 uploads.
+*   **`/v0/uploads/finalize`**: Finalizes a presigned upload, creating the necessary database records and enqueueing a processing job.
+*   **`/v0/documents/upload`**: A legacy endpoint for direct file uploads.
+*   **`/v0/jobs/{job_id}`**: Retrieves the status of a processing job.
+*   **`/v0/documents`**: Lists recent documents for a tenant.
+*   **`/v0/documents/{document_id}/reprocess`**: Triggers the reprocessing of a document.
+*   **`/v0/documents/{document_id}/report.json`**: Retrieves a JSON report for a document.
+*   **`/v0/documents/{document_id}/report.md`**: Retrieves a Markdown report for a document.
+*   **`/v0/credits/*`**: A set of endpoints for managing and viewing credits.
+
+### Internal Interfaces
+
+*   **Database**: The API and worker interact with the PostgreSQL database via SQLAlchemy.
+*   **Message Queue**: The API enqueues jobs to the Celery worker via Redis.
+*   **Object Storage**: The API and worker interact with the S3-compatible object storage (MinIO) via the `minio` library.
+
+## 5. Risks
+
+### Gaps vs. PRD/ADR
+
+*   **LLM Integration**: The `shared/llm_service` is a stub and does not yet implement the multi-provider fallback architecture described in `ADR-0014`.
+*   **Entity Discovery**: Block 1 (Entity Discovery) is not yet implemented. The current focus is solely on Block 0a (Document Pre-processing).
+*   **Multi-Tenancy**: While the database schema supports multi-tenancy, the current implementation appears to be focused on a single tenant for development purposes. The full implications of the database-per-tenant strategy described in `ADR-0004` have not been realized.
+
+### Technical Risks
+
+*   **OCR Accuracy**: The current OCR implementation relies on Tesseract and OCRmyPDF. The accuracy of these tools can vary depending on the quality of the input documents. The "Never Reject, Always Warn" strategy (`ADR-0009`) is a good mitigation, but further work may be needed to improve OCR quality.
+*   **Credit Estimation**: The credit estimation logic is currently a simple heuristic. As the system evolves, this will need to be refined to more accurately reflect the actual processing costs (`ADR-0010`).
+*   **Error Handling**: The worker contains some basic error handling, but it could be made more robust. For example, it could implement more sophisticated retry mechanisms or dead-letter queues.
+
+## 6. Test Surface
+
+The `tests/` directory contains a number of tests for the API and worker. However, there are some gaps:
+
+*   **Unit Tests**: There is a lack of unit tests for individual functions and classes. Most of the existing tests are integration tests that rely on the full Docker Compose stack.
+*   **OCR Testing**: There are no specific tests for the OCR adapters. This makes it difficult to validate the accuracy and performance of the OCR process.
+*   **Shared Libraries**: The shared libraries in `shared/` are not well-tested.
+
+## 7. Suggested Plan
+
+### Near-Term (1-2 weeks)
+
+*   **Improve Test Coverage**:
+    *   Add unit tests for the `shared/quality` and `shared/ocr` modules.
+    *   Create a suite of OCR regression tests using a small set of sample documents.
+*   **Refine Credit Estimation**:
+    *   Implement a more sophisticated credit estimation model that takes into account factors such as page count, image resolution, and language.
+*   **Flesh out LLM Service**:
+    *   Begin implementing the `LLMRouter` and multi-provider fallback logic as described in `ADR-0014`.
+
+### Mid-Term (3-6 weeks)
+
+*   **Implement Block 1 (Entity Discovery)**:
+    *   Begin development of the Entity Discovery Engine, integrating it with the output of Block 0a.
+*   **Enhance Multi-Tenancy**:
+    *   Start to implement the database-per-tenant strategy, including the necessary automation for provisioning and managing tenant databases.
+*   **Improve Error Handling**:
+    *   Implement more robust error handling in the Celery worker, including retries with exponential backoff and a dead-letter queue for failed jobs.
