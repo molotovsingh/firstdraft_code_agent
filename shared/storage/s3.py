@@ -89,6 +89,14 @@ class Storage:
                 pass
         return self.client.presigned_get_object(self.bucket, key, expires=timedelta(seconds=expiry))
 
+    def presign_put_url_internal(self, key: str, expiry: int = 3600) -> str:
+        """Return presigned PUT URL using internal endpoint (no S3_PUBLIC_ENDPOINT_URL)."""
+        return self.client.presigned_put_object(self.bucket, key, expires=timedelta(seconds=expiry))
+
+    def presign_get_url_internal(self, key: str, expiry: int = 600) -> str:
+        """Return presigned GET URL using internal endpoint (no S3_PUBLIC_ENDPOINT_URL)."""
+        return self.client.presigned_get_object(self.bucket, key, expires=timedelta(seconds=expiry))
+
     # --- Offline SigV4 presign for public endpoint ---
     def _offline_presign(self, method: str, key: str, expiry: int, public_endpoint: str) -> str:
         # Inputs

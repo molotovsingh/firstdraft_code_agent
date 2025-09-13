@@ -55,6 +55,14 @@ def main():
 
     # Step 1: Get presigned URL
     print("1. Getting presigned upload URL...")
+    # Prepare headers for presign request
+    headers = {}
+    if os.getenv("PRESIGN_INTERNAL") == "1":
+        headers["X-Internal-Network"] = "1"
+        print("   Using internal network presign mode")
+    else:
+        print("   Using standard presign mode")
+
     presign_resp = _retry(lambda: requests.post(
         f"{API_BASE}/v0/uploads/presign",
         json={
@@ -64,6 +72,7 @@ def main():
             "mime": mime,
         },
         timeout=30,
+        headers=headers,
     ))
     presign_resp.raise_for_status()
     presign_data = presign_resp.json()

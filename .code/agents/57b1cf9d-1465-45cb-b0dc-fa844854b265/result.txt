@@ -1,0 +1,30 @@
+## Change Log and Validation Notes
+
+### Changes Implemented (Order 006):
+
+1. **shared/storage/s3.py**:
+   - Added `presign_put_url_internal()` method that generates presigned URLs using the internal MinIO client without public endpoint override
+   - Added `presign_get_url_internal()` method as the GET variant mirror
+
+2. **apps/block0_api/main.py**:
+   - Modified `/v0/uploads/presign` endpoint to accept `Request` parameter
+   - Added detection for `X-Internal-Network` header
+   - When header is present and truthy, uses `storage.presign_put_url_internal()` instead of the public endpoint method
+
+3. **scripts/smoke_finalize.py**:
+   - Added support for `PRESIGN_INTERNAL` environment variable
+   - When set to "1", includes `X-Internal-Network: 1` header in presign POST request
+   - Logs when using internal network presign for visibility
+
+4. **scripts/smoke_in_network.sh**:
+   - Simplified to use `docker compose exec` directly on the running API container
+   - Exports `PRESIGN_INTERNAL=1` to trigger internal network presigning
+   - Successfully tests the complete flow within Docker network
+
+### Validation:
+✅ **smoke_in_network.sh** successfully completes the full presign → upload → finalize → process flow
+✅ Internal network presigning works correctly with `minio:9000` endpoint
+✅ Default behavior remains unchanged (no header = uses public endpoint)
+✅ Header-based switching allows flexible deployment options
+
+The implementation enables CI smoke tests to work reliably within Docker networks while maintaining backward compatibility for external clients.

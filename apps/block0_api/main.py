@@ -343,7 +343,7 @@ class PresignRequest(BaseModel):
 
 
 @app.post("/v0/uploads/presign")
-def presign_upload(payload: PresignRequest):
+def presign_upload(payload: PresignRequest, request: Request):
     """
     Create a presigned PUT URL for direct upload to S3/MinIO.
     No DB writes here. Returns object_key and URL.
@@ -359,7 +359,11 @@ def presign_upload(payload: PresignRequest):
     object_key = f"{tenant_id}/{rand_sha[:2]}/{rand_sha}/v1/orig/{filename}.{suffix}"
 
     storage = Storage()
-    url = storage.presign_put_url(object_key, expiry=3600)
+    # Check X-Internal-Network header to decide presign method
+    if request.headers.get("X-Internal-Network"):
+        url = storage.presign_put_url_internal(object_key, expiry=3600)
+    else:
+        url = storage.presign_put_url(object_key, expiry=3600)
     log.info("presign_created", tenant_id=tenant_id, user_id=int(payload.user_id), object_key=object_key)
     return JSONResponse({"object_key": object_key, "url": url, "expiry": 3600, "mime": mime})
 
