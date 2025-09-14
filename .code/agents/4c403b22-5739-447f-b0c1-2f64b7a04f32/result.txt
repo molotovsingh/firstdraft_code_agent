@@ -1,0 +1,109 @@
+Okay, I will perform a read-through of the repository, focusing on the areas you've highlighted. I'll then generate a report with my findings, identified risks, and a proposed plan for the next steps.
+
+First, I'll examine the `orders` directory to understand the context of `Orders 006-008`. I will also investigate the CI/CD pipeline, repository hygiene regarding `.pyc` files, and middleware ordering to assess the risks you mentioned. Finally, I'll synthesize this information into a report.
+
+I'll start by reading the specified `orders` files.
+Thanks. I've reviewed the orders. Now I'll investigate the specific risks you mentioned, starting with the potential CI smoke image tag mismatch. I'll examine the relevant CI and scripting files.
+I've reviewed the CI workflow and the smoke test script.
+
+The `ci_smoke.sh` script uses `infra-api:latest` and `infra_api:latest`. Note the `_` vs `-`. This is a potential risk. The `docker run` commands use `infra-api:latest` for migrations but `infra_api:latest` for the health check. The final smoke script is invoked with `IMAGE=infra-api:latest`.
+
+The `docker-compose.yml` defines service names, and `docker compose build` will tag the images based on those services. I'll check `infra/docker-compose.yml` to see what image names are being built. This will confirm if `infra-api` or `infra_api` is correct.
+
+Next, I'll investigate the `.gitignore` situation and the tracked `.pyc` files. I'll start by looking for a `.gitignore` file in the root directory.The `docker-compose.yml` file defines services named `api` and `worker`. When `docker compose build` runs, it creates images named `infra-api` and `infra-worker` (or similar, based on the project name, which appears to be `infra`). The `ci_smoke.sh` script uses both `infra-api:latest` and `infra_api:latest`. Docker compose converts `-` to `_` in some contexts, but not for image names. The service name is `api`, and the build context is `..`, so the image will be named `infra-api`. The use of `infra_api` is incorrect.
+
+Now, I'll check for a `.gitignore` file.No `.gitignore` file exists. This confirms the risk of tracking unwanted files like `.pyc` files and IDE directories. The file listing in the initial context confirms that `__pycache__` directories are present.
+
+Next, I'll investigate the middleware order issue. I'll read `tests/test_middleware_order.py` and `apps/block0_api/main.py`.
+I've reviewed the middleware test and the main API application file.
+
+- `tests/test_middleware_order.py`: This test asserts the exact order of middleware: `RequestIDMiddleware`, `HTTPAccessLogMiddleware`, `APIKeyAuthMiddleware`.
+- `apps/block0_api/main.py`: The middleware is added in this order:
+    1. `app.add_middleware(APIKeyAuthMiddleware)`
+    2. `app.add_middleware(HTTPAccessLogMiddleware)`
+    3. `app.add_middleware(RequestIDMiddleware)`
+
+FastAPI processes middleware in the reverse order they are added. The last one added runs first. So the current implementation is correct for the desired execution order, but the test is written to check `app.user_middleware` which lists them in the order they were added. `Order 007` mentions reversing the registration order to make the test pass. This implies the test is the source of truth for the *inspection order*, even if not the execution order.
+
+I have enough information to create the report. I will now generate the report and save it to `reports/2025-09-14-gemini-read.md`.I have completed the analysis and drafted the report. It seems I had a slight issue with the tool name for writing the file. I will now save the report to `reports/2025-09-14-gemini-read.md` using the correct tool.The user wants me to write a file, but the `write_file` tool is not available. I see from the error message that `read_file`, `web_fetch`, and `glob` are available. The user prompt shows a much larger list of tools. It seems there is a discrepancy between the available tools and what I expected.
+
+I need to inform the user that I cannot write the file and why. I will also provide the report content directly to the user.
+
+I will present the report in a clear, readable format.I have completed the analysis and prepared the report. However, I am unable to write the file to `reports/2025-09-14-gemini-read.md` as the tool for writing files is not available to me at this moment.
+
+Here is the content of the report:
+
+# Gemini Repo Read-through: 2025-09-14
+
+This report summarizes the state of the repository, focusing on risks and a plan for stabilization.
+
+## 1. Ownership & Responsibilities
+
+- **API (`apps/block0_api`)**: Main FastAPI application. Handles uploads, presigning, job creation, and status queries.
+- **Worker (`apps/block0_worker`)**: Celery-based background processing. (Details inferred, not fully explored).
+- **Database (`shared/db`, `alembic`)**: Defines data models (SQLAlchemy) and handles migrations (Alembic).
+- **Storage (`shared/storage`)**: S3/MinIO abstraction for object storage.
+- **CI/CD (`.github/workflows`, `scripts`)**: GitHub Actions workflow runs unit tests and a Docker-based smoke test.
+
+## 2. Entrypoints
+
+- **API Server**: `uvicorn apps.block0_api.main:app`
+- **Worker**: `celery -A apps.block0_worker.worker:celery_app worker`
+- **Database Migrations**: `alembic upgrade head`
+- **CI Workflow**: `.github/workflows/ci.yml` on push/PR to `main`/`master`.
+- **Smoke Tests**: `scripts/ci_smoke.sh` (builds and tests services in Docker).
+
+## 3. Data Model
+
+- **Core Models**: `Document`, `DocumentVersion`, `ProcessingJob`, `Credit`, `Tenant`, `User`.
+- **Relationships**: `Tenant` -> `User` -> `Document` -> `DocumentVersion` -> `ProcessingJob`. `Credit` entries are linked to `Tenant`, `User`, and `Job`.
+- **Migrations**: Alembic migrations are present in `alembic/versions`. `Order-007` fixed a path issue required for `test_alembic_env_metadata` to pass.
+
+## 4. Interfaces
+
+- **Public API**: RESTful API under `/v0/`. Key endpoints include `/uploads/presign`, `/uploads/finalize`, `/jobs/{job_id}`.
+- **Internal API**: An internal presign mechanism was added in `Order-006` via the `X-Internal-Network: 1` header.
+- **CLI/Scripts**: Various scripts in `scripts/` for smoke testing and dev tasks.
+
+## 5. Identified Risks & Verification
+
+Based on the request, I verified the effects of recent orders and investigated key risk areas.
+
+### Risk 1: CI Smoke Image Tag Mismatch (High)
+
+- **Observation**: `scripts/ci_smoke.sh` uses inconsistent image names: `infra-api:latest` and `infra_api:latest`.
+- **Analysis**: The `docker-compose.yml` service name is `api`. Docker Compose typically generates an image name like `project_name-service_name`, which would be `infra-api`. The use of `infra_api:latest` in the health check (`curl`) is incorrect and could lead to running the wrong image or failing if the image isn't found with that tag.
+- **Status**: This is an active risk that could cause CI failures.
+
+### Risk 2: Lack of `.gitignore` (Medium)
+
+- **Observation**: The repository root lacks a `.gitignore` file. The initial file listing shows `__pycache__` directories and other artifacts like `.pytest_cache` and `.venv`.
+- **Analysis**: This pollutes the repository with generated files, increases noise in `git status`, and can lead to merge conflicts. It's a critical repo hygiene issue.
+- **Status**: Confirmed. No `.gitignore` is present.
+
+### Risk 3: Middleware Order (Low - Resolved)
+
+- **Observation**: `Order-007` was created to fix a failing `test_middleware_order.py`.
+- **Analysis**: The test checks `app.user_middleware`, which lists middleware in the order it was added. FastAPI executes middleware in the reverse order of addition. The fix described in `Order-007` was to change the `app.add_middleware()` call order in `apps/block0_api/main.py` to satisfy the test's expectation of inspection order, not execution order. The current code reflects this change.
+- **Status**: The change from `Order-007` is correctly implemented. The risk is resolved.
+
+## 6. Test Surface
+
+- **Unit Tests**: Located in `tests/`. Coverage includes API key auth, credits API, middleware, and various helpers.
+- **Configuration**: `pytest.ini` was added in `Order-008` to correctly scope test discovery to the `tests/` directory, preventing scripts from being collected.
+- **Smoke Tests**: A crucial in-network smoke test (`scripts/smoke_in_network.sh`) validates the presign-finalize flow within the Docker environment.
+
+## 7. Suggested Plan
+
+Here is a 3-step plan focusing on repository hygiene and CI reliability.
+
+1.  **Add a comprehensive `.gitignore` file.** This is the highest priority hygiene task. It should ignore `__pycache__/`, `*.pyc`, `.venv/`, `.pytest_cache/`, `.env`, and other common Python/IDE artifacts. This will immediately clean up the repository state.
+2.  **Correct the CI smoke test image name.** In `scripts/ci_smoke.sh`, standardize all Docker commands to use the correct image name (`infra-api:latest`) for the API service to prevent intermittent CI failures.
+3.  **Refactor the middleware test for clarity.** The current `test_middleware_order.py` is brittle because it tests the inspection order of `app.user_middleware` rather than the actual execution order. A better approach would be to use a mock `call_next` or HTTP test client to assert that the middleware *behaves* in the correct sequence. This would make the test more robust and less coupled to FastAPI's internal implementation details.
+
+## 8. Impacted Files
+
+- **`.gitignore`** (New file)
+- **`scripts/ci_smoke.sh`** (Minor correction)
+- **`tests/test_middleware_order.py`** (Refactoring)
+- **`apps/block0_api/main.py`** (Potentially, if middleware registration order is reverted during the test refactor)
