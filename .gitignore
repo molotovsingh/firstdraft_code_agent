@@ -22,6 +22,7 @@ ENV/
 .idea/
 .vscode/
 .DS_Store
+.code/
 
 # Env files
 .env
