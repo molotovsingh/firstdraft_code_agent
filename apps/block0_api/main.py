@@ -103,7 +103,8 @@ class RequestIDMiddleware(BaseHTTPMiddleware):
             clear_contextvars()
 
 
-app.add_middleware(RequestIDMiddleware)
+# Register middleware in an order such that app.user_middleware enumerates as
+# [RequestIDMiddleware, HTTPAccessLogMiddleware, APIKeyAuthMiddleware].
 
 # Simple log throttle to avoid spamming identical warnings
 _log_throttle: dict[str, float] = {}
@@ -140,7 +141,7 @@ class HTTPAccessLogMiddleware(BaseHTTPMiddleware):
         return response
 
 
-app.add_middleware(HTTPAccessLogMiddleware)
+# Placeholder: actual registration occurs below after all classes are defined
 
 
 class APIKeyAuthMiddleware(BaseHTTPMiddleware):
@@ -157,6 +158,8 @@ class APIKeyAuthMiddleware(BaseHTTPMiddleware):
 
 
 app.add_middleware(APIKeyAuthMiddleware)
+app.add_middleware(HTTPAccessLogMiddleware)
+app.add_middleware(RequestIDMiddleware)
 
 
 @app.get("/healthz")
