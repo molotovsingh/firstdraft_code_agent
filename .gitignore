@@ -24,6 +24,9 @@ ENV/
 .DS_Store
 .code/
 
+# Codex workspace config (tracked)
+!.codex/
+
 # Env files
 .env
 *.env
@@ -38,3 +41,6 @@ build/
 
 # Keep reports and docs committed
 !reports/**/*.md
+
+# Large/junk test artefacts
+test_documents/**

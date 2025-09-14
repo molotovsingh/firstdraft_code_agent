@@ -123,4 +123,4 @@ agent_run {
 - Only Code may approve merges and move tasks to Done.
 - Claude does not bypass review gates or modify guardrail docs without order.
 - Gemini never writes/commits code.
-
+- No `sudo`/root commands by any agent. If a privileged step is required, request an operator-run step and document it in `PRIVILEGE_POLICY.md`.

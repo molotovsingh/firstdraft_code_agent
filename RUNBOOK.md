@@ -35,6 +35,10 @@ docker compose -f infra/docker-compose.yml exec api python scripts/smoke_finaliz
 docker compose -f infra/docker-compose.yml exec api bash
 ```
 
+### Privilege Policy
+- Repository scripts do not use `sudo` and must run under an unprivileged user.
+- Any required elevated actions (package installs, daemon restarts, group membership changes) are performed manually by the operator. See `PRIVILEGE_POLICY.md`.
+
 ### Using uv locally
 - uv venv .venv
 - uv pip install -r requirements.txt

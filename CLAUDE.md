@@ -23,6 +23,8 @@ docker compose -f infra/docker-compose.yml exec api alembic upgrade head
 docker compose -f infra/docker-compose.yml exec api python scripts/bootstrap_dev.py
 ```
 
+Note: Do not run `sudo` in repository-driven commands. Any privileged setup (e.g., installing Docker or adding your user to the `docker` group) must be performed manually by the operator. See `PRIVILEGE_POLICY.md`.
+
 ### Testing and Validation
 ```bash
 # Health checks

@@ -19,6 +19,7 @@ Severity levels: Blocker (must fix), Major (should fix before merge), Minor (nic
 - AuthN/AuthZ rules enforced; secrets from env; least privilege. [Blocker]
 - Multi‑tenant access correctly scoped and filtered. [Blocker]
 - Inputs validated; no injection or unsafe deserialization. [Blocker]
+- Privilege policy respected: No scripts or code invoke `sudo` or assume root. All privileged steps are documented for operator execution. [Blocker]
 
 ## Performance & Reliability
 
@@ -43,4 +44,3 @@ Details: <what/where/why>
 Repro/Proof: <steps or failing test/ref>
 Fix Suggestion: <concise guidance>
 ```
-
