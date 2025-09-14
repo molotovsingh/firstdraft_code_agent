@@ -35,7 +35,7 @@ dc up -d api worker
 echo "[ci_smoke] Waiting for API health..."
 ATTEMPTS=0
 MAX_ATTEMPTS=24 # ~120s @ 5s interval
-until docker run --rm --network "$NETWORK_NAME" infra_api:latest curl -fsS http://api:8000/healthz >/dev/null 2>&1; do
+until docker run --rm --network "$NETWORK_NAME" infra-api:latest curl -fsS http://api:8000/healthz >/dev/null 2>&1; do
   ATTEMPTS=$((ATTEMPTS+1))
   if [ "$ATTEMPTS" -ge "$MAX_ATTEMPTS" ]; then
     echo "[ci_smoke] API did not become healthy in time" >&2
