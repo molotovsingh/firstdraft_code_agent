@@ -10,6 +10,7 @@ from sqlalchemy import text as _sql_text, func
 from shared.db import models
 from shared.db.models import ProcessingStatus
 from shared.storage.s3 import Storage
+from shared.content.filters import deny_reason_for
 from shared.quality.metrics import estimate_credits
 from apps.block0_worker.worker import enqueue_process_document
 from structlog import get_logger
@@ -412,6 +413,10 @@ async def upload_documents(
         for f in files:
             # Stream to temp file and compute sha256 incrementally to avoid large memory usage
             mime = f.content_type or "application/octet-stream"
+            # Early denylist check to avoid storing obviously non-litigation artefacts
+            denied, reason = deny_reason_for(f.filename or "", mime)
+            if denied:
+                raise HTTPException(status_code=400, detail=reason)
             hasher = hashlib.sha256()
             size_bytes = 0
             with tempfile.NamedTemporaryFile(delete=False) as tf:

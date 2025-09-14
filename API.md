@@ -11,6 +11,10 @@ Base URL: `http://localhost:8000`
 
 Returns a presigned PUT URL to upload directly to S3/MinIO. No DB writes.
 
+Notes:
+- Upload denylist: executables/installers/disk images and similar non-document artefacts (e.g., `.exe`, `.msi`, `.dmg`, `.iso`, `.apk`, VM images like `.vmdk`) are rejected during upload/finalize.
+- Configure overrides via environment variables `UPLOAD_DENYLIST_EXTS` and `UPLOAD_DENYLIST_MIMES` (comma-separated).
+
 Response 200:
 ```json
 {
