@@ -291,6 +291,9 @@ def process_document(job_id: str):
                              languages=languages,
                              error_type=error_type)
 
+        if (provider != "stub") and not (ocr_text or "").strip():
+            warnings = (warnings or []) + ["OCR produced no text after retries"]
+
         # Store OCR text as object for consistency
         tenant_id = str(doc.tenant_id)
         sha = doc.bytes_sha256

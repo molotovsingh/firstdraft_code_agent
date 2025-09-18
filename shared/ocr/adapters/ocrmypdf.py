@@ -1,10 +1,12 @@
 from typing import List, Optional
-from .base import OCRAdapter, OCRResult, PageText
-import tempfile
-import subprocess
-from pypdf import PdfReader
 import io
+import subprocess
+import tempfile
 import time
+
+from pypdf import PdfReader
+
+from .base import OCRAdapter, OCRResult, PageText
 
 
 class OCRmyPDFAdapter(OCRAdapter):
@@ -45,16 +47,17 @@ class OCRmyPDFAdapter(OCRAdapter):
             if self.extra_args:
                 cmd += list(self.extra_args)
             cmd += [in_pdf, out_pdf]
-            # Retry logic with exponential backoff (3 attempts total)
-            for attempt in range(3):
+            # Retry logic with exponential backoff (2 attempts total)
+            delay = 0.5
+            for attempt in range(2):
                 try:
                     subprocess.run(cmd, check=True, capture_output=True, timeout=self.timeout_seconds)
                     break  # Success
                 except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
-                    if attempt == 2:
-                        page = PageText(index=0, text="", confidence=0.0, language=lang)
-                        return OCRResult(pages=[page], combined_text="")
-                    time.sleep(0.5 * (2 ** attempt))
+                    if attempt == 1:
+                        raise RuntimeError("ocrmypdf failed after retries")
+                    time.sleep(delay)
+                    delay *= 2
 
             text = ""
             try:
