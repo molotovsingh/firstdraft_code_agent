@@ -43,11 +43,23 @@ Notes:
 - Credits ledger is included with a simple estimation stub and finalization hook.
 - If your host cannot resolve `minio`, use the in-network smoke helper `scripts/smoke_in_network.sh` (also used by `ci_smoke.sh`).
 
+## Privilege Policy
+- All `sudo`/root commands are operator-only and are never invoked by our scripts.
+- If a prerequisite needs elevated privileges (e.g., Docker install, adding your user to the `docker` group), run those steps manually. See `PRIVILEGE_POLICY.md`.
+
 ## Using uv (faster local setup)
 - uv venv .venv
 - uv pip install -r requirements.txt
 - uv run pytest -q
 - uv run ./scripts/ci_smoke.sh
+
+## Git Hooks (optional)
+To enforce the no‑sudo policy locally, enable repo hooks:
+
+```
+git config core.hooksPath .githooks
+chmod +x .githooks/pre-commit scripts/check_no_sudo.sh
+```
 
 See `API.md` and `RUNBOOK.md` for details.
 

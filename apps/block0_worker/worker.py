@@ -78,21 +78,40 @@ def _ocr_pdf_bytes(original_bytes: bytes, lang: str):
             except FileNotFoundError:
                 warnings.append("PDF OCR produced no sidecar text")
         except subprocess.CalledProcessError as e:
-            warnings.append("PDF OCR failed; see logs")
+            warnings.append(f"PDF OCR failed (exit code {e.returncode})")
             # Throttle noisy logs
             if _should_log("ocrmypdf_failed"):
                 try:
                     err = e.stderr.decode(errors="ignore") if e.stderr else ""
                 except Exception:
                     err = ""
-                log.error("ocrmypdf_failed", returncode=e.returncode, stderr=err)
-        except subprocess.TimeoutExpired:
-            warnings.append("PDF OCR timed out")
+                log.error("ocrmypdf_failed",
+                         returncode=e.returncode,
+                         stderr=err[:500],  # Truncate very long error messages
+                         language=lang,
+                         timeout_configured=180)
+        except subprocess.TimeoutExpired as e:
+            warnings.append(f"PDF OCR timed out after {e.timeout}s")
             if _should_log("ocrmypdf_timeout"):
-                log.error("ocrmypdf_timeout")
+                log.error("ocrmypdf_timeout",
+                         timeout_seconds=e.timeout,
+                         language=lang,
+                         cmd=" ".join(e.cmd[:3]) if e.cmd else "unknown")
     return text, warnings
 
 log = get_logger()
+
+# Simple log throttle to avoid spamming identical warnings
+_log_throttle: dict[str, float] = {}
+
+def _should_log(key: str, window_sec: float = 60.0) -> bool:
+    import time as _t
+    now = _t.monotonic()
+    last = _log_throttle.get(key)
+    if last is None or (now - last) >= window_sec:
+        _log_throttle[key] = now
+        return True
+    return False
 
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", os.getenv("REDIS_URL", "redis://redis:6379/0"))
 CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", "redis://redis:6379/1")
@@ -259,9 +278,18 @@ def process_document(job_id: str):
             # Observe duration
             OCR_DURATION_SECONDS.labels(mime=(doc.mime or "unknown").lower()).observe(time.perf_counter() - t0)
         except Exception as e:
-            warnings = (warnings or []) + [f"OCR error: {e}"]
+            error_type = type(e).__name__
+            warnings = (warnings or []) + [f"OCR processing failed ({error_type}): {str(e)[:100]}"]
             if _should_log("ocr_failed"):
-                log.exception("ocr_failed", job_id=job_id)
+                log.exception("ocr_failed",
+                             job_id=job_id,
+                             document_id=str(doc.id) if doc else "unknown",
+                             mime_type=doc.mime if doc else "unknown",
+                             file_size_bytes=len(original_bytes) if 'original_bytes' in locals() else 0,
+                             provider=provider,
+                             quality_mode=quality_mode,
+                             languages=languages,
+                             error_type=error_type)
 
         # Store OCR text as object for consistency
         tenant_id = str(doc.tenant_id)
@@ -334,7 +362,18 @@ def process_document(job_id: str):
         log.info("job_succeeded", job_id=job_id)
     except Exception as e:
         if _should_log("job_failed"):
-            log.exception("job_failed", job_id=job_id)
+            doc_info = {}
+            if 'doc' in locals() and doc:
+                doc_info = {
+                    "document_id": str(doc.id),
+                    "tenant_id": str(doc.tenant_id),
+                    "mime_type": doc.mime,
+                    "filename": doc.orig_filename,
+                }
+            log.exception("job_failed",
+                         job_id=job_id,
+                         error_type=type(e).__name__,
+                         **doc_info)
         job = db.get(models.ProcessingJob, uuid.UUID(job_id)) if 'job' in locals() else None
         if job:
             job.status = ProcessingStatus.failed
@@ -364,7 +403,9 @@ def process_document(job_id: str):
                     db.commit()
         except Exception:
             if _should_log("credit_refund_failed"):
-                log.exception("credit_refund_failed", job_id=job_id)
+                log.exception("credit_refund_failed",
+                             job_id=job_id,
+                             tenant_id=str(estimate_credit.tenant_id) if 'estimate_credit' in locals() and estimate_credit else "unknown")
     finally:
         try:
             clear_contextvars()

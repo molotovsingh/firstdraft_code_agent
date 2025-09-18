@@ -11,7 +11,7 @@ def _load_module_from_path(path: pathlib.Path):
 
 
 def test_alembic_versions_have_upgrade_and_downgrade():
-    versions_dir = pathlib.Path('alembic/versions')
+    versions_dir = pathlib.Path('migrations/versions')
     assert versions_dir.exists()
     files = sorted(p for p in versions_dir.glob('*.py'))
     assert files, 'no alembic versions found'
@@ -23,7 +23,7 @@ def test_alembic_versions_have_upgrade_and_downgrade():
 
 
 def test_alembic_chain_is_linear():
-    versions_dir = pathlib.Path('alembic/versions')
+    versions_dir = pathlib.Path('migrations/versions')
     files = sorted(p for p in versions_dir.glob('*.py'))
     mods = [_load_module_from_path(f) for f in files]
     by_rev = {m.revision: m for m in mods if hasattr(m, 'revision')}

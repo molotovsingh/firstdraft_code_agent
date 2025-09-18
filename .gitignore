@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Test/cache
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Environments
+.venv/
+venv/
+ENV/
+
+# IDE/OS
+.idea/
+.vscode/
+.DS_Store
+.code/
+
+# Codex workspace config (tracked)
+!.codex/
+
+# Env files
+.env
+*.env
+
+# Build/packaging
+dist/
+build/
+*.egg-info/
+
+# Logs
+*.log
+
+# Keep reports and docs committed
+!reports/**/*.md
+
+# Large/junk test artefacts
+test_documents/**
+tests/testing_document/**

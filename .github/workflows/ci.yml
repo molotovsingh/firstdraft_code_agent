@@ -23,11 +23,24 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run unit tests
-        run: pytest -q
+      - name: Enforce no-sudo policy in scripts
+        run: |
+          chmod +x scripts/check_no_sudo.sh
+          ./scripts/check_no_sudo.sh
+
+      - name: Run unit tests (with JUnit XML)
+        run: |
+          mkdir -p reports
+          pytest -q --junitxml=reports/junit.xml
+
+      - name: Upload unit test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-xml
+          path: reports/junit.xml
 
       - name: Build images and run in-network smoke
         run: |
           chmod +x scripts/ci_smoke.sh scripts/smoke_in_network.sh
           ./scripts/ci_smoke.sh
-

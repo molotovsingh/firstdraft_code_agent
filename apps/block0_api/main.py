@@ -4,12 +4,14 @@ from typing import List, Optional
 import os
 import uuid
 import subprocess
+import hashlib
 
 from shared.db.session import SessionLocal, get_db
 from sqlalchemy import text as _sql_text, func
 from shared.db import models
 from shared.db.models import ProcessingStatus
 from shared.storage.s3 import Storage
+from shared.content.filters import deny_reason_for
 from shared.quality.metrics import estimate_credits
 from apps.block0_worker.worker import enqueue_process_document
 from structlog import get_logger
@@ -356,6 +358,11 @@ def presign_upload(payload: PresignRequest, request: Request):
     filename = payload.filename
     mime = payload.mime or "application/octet-stream"
 
+    # Early denylist check to prevent uploading non-document files
+    denied, reason = deny_reason_for(filename, mime)
+    if denied:
+        raise HTTPException(status_code=400, detail=reason)
+
     # Random sha-like path id and short suffix to avoid collisions
     rand_sha = secrets.token_hex(32)  # 64 hex chars
     suffix = secrets.token_hex(4)     # 8 hex chars
@@ -412,6 +419,10 @@ async def upload_documents(
         for f in files:
             # Stream to temp file and compute sha256 incrementally to avoid large memory usage
             mime = f.content_type or "application/octet-stream"
+            # Early denylist check to avoid storing obviously non-litigation artefacts
+            denied, reason = deny_reason_for(f.filename or "", mime)
+            if denied:
+                raise HTTPException(status_code=400, detail=reason)
             hasher = hashlib.sha256()
             size_bytes = 0
             with tempfile.NamedTemporaryFile(delete=False) as tf:
@@ -791,6 +802,11 @@ def finalize_upload(payload: FinalizeRequest, db=Depends(get_db)):
     key = payload.key
     filename = payload.filename
     mime = payload.mime or "application/octet-stream"
+
+    # Early denylist check to prevent finalizing non-document files
+    denied, reason = deny_reason_for(filename or "", mime)
+    if denied:
+        raise HTTPException(status_code=400, detail=reason)
 
     storage = Storage()
     # Validate tenant and user

@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# Pre-commit: block accidental sudo use in repo scripts.
+scripts/check_no_sudo.sh
