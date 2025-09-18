@@ -1,9 +1,12 @@
 from typing import List, Optional
-from .base import OCRAdapter, OCRResult, PageText
-from PIL import Image
 import io
+import time
+
+from PIL import Image
 import pytesseract
-from pytesseract import Output
+from pytesseract import Output, TesseractError, TesseractNotFoundError
+
+from .base import OCRAdapter, OCRResult, PageText
 
 
 class TesseractAdapter(OCRAdapter):
@@ -32,10 +35,25 @@ class TesseractAdapter(OCRAdapter):
         if self.extra_config:
             cfg_parts.append(self.extra_config)
         config = " ".join(cfg_parts) if cfg_parts else None
-        if config:
-            text = pytesseract.image_to_string(pil_img, lang=lang, config=config) or ""
-        else:
-            text = pytesseract.image_to_string(pil_img, lang=lang) or ""
+        text = ""
+        last_exc: Exception | None = None
+        delay = 0.5
+        for attempt in range(2):
+            try:
+                if config:
+                    text = pytesseract.image_to_string(pil_img, lang=lang, config=config) or ""
+                else:
+                    text = pytesseract.image_to_string(pil_img, lang=lang) or ""
+                last_exc = None
+                break
+            except (TesseractError, TesseractNotFoundError, OSError, RuntimeError) as exc:
+                last_exc = exc
+                if attempt == 1:
+                    raise
+                time.sleep(delay)
+                delay *= 2
+        if last_exc:
+            raise last_exc
 
         confidence = 0.0
         try:
