@@ -19,3 +19,10 @@ This repository follows a strict operator-only policy for any command that requi
 
 If anything violates this policy, file a bug and remove the `sudo` usage.
 
+## Docker And This Policy
+Docker is fully compatible with this policy:
+
+- Repository scripts call `docker`/`docker compose` without elevation.
+- Operator may run privileged host setup once (installation, service enablement, user→`docker` group). After that, normal users can run Docker without elevation.
+- If Docker is unreachable or permission is denied, fix the host environment as operator; do not change scripts to add `sudo`.
+

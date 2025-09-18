@@ -44,3 +44,4 @@ build/
 
 # Large/junk test artefacts
 test_documents/**
+tests/testing_document/**

@@ -165,3 +165,121 @@ def test_finalize_missing_object(monkeypatch):
     finally:
         api.app.dependency_overrides.clear()
 
+
+def test_presign_denies_dmg_files():
+    """Test that presign endpoint rejects .dmg files"""
+    import apps.block0_api.main as api
+    monkeypatch = __import__("pytest").MonkeyPatch()
+    monkeypatch.setattr(api, "Storage", lambda: DummyStorage())
+    try:
+        with TestClient(api.app) as client:
+            r = client.post(
+                "/v0/uploads/presign",
+                json={
+                    "tenant_id": "11111111-1111-1111-1111-111111111111",
+                    "user_id": 1,
+                    "filename": "malware.dmg",
+                    "mime": "application/x-apple-diskimage",
+                },
+            )
+            assert r.status_code == 400
+            assert "dmg" in r.json()["detail"]
+    finally:
+        monkeypatch.undo()
+
+
+def test_presign_denies_exe_files():
+    """Test that presign endpoint rejects .exe files"""
+    import apps.block0_api.main as api
+    monkeypatch = __import__("pytest").MonkeyPatch()
+    monkeypatch.setattr(api, "Storage", lambda: DummyStorage())
+    try:
+        with TestClient(api.app) as client:
+            r = client.post(
+                "/v0/uploads/presign",
+                json={
+                    "tenant_id": "11111111-1111-1111-1111-111111111111",
+                    "user_id": 1,
+                    "filename": "virus.exe",
+                    "mime": "application/x-msdownload",
+                },
+            )
+            assert r.status_code == 400
+            assert "exe" in r.json()["detail"]
+    finally:
+        monkeypatch.undo()
+
+
+def test_presign_allows_pdf_files():
+    """Test that presign endpoint allows .pdf files"""
+    import apps.block0_api.main as api
+    monkeypatch = __import__("pytest").MonkeyPatch()
+    monkeypatch.setattr(api, "Storage", lambda: DummyStorage())
+    try:
+        with TestClient(api.app) as client:
+            r = client.post(
+                "/v0/uploads/presign",
+                json={
+                    "tenant_id": "11111111-1111-1111-1111-111111111111",
+                    "user_id": 1,
+                    "filename": "document.pdf",
+                    "mime": "application/pdf",
+                },
+            )
+            assert r.status_code == 200
+            assert "object_key" in r.json()
+    finally:
+        monkeypatch.undo()
+
+
+def test_finalize_denies_dmg_files():
+    """Test that finalize endpoint rejects .dmg files"""
+    import apps.block0_api.main as api
+    tenant = uuid.UUID("11111111-1111-1111-1111-111111111111")
+    monkeypatch = __import__("pytest").MonkeyPatch()
+    monkeypatch.setattr(api, "Storage", lambda: DummyStorage())
+    api.app.dependency_overrides[api.get_db] = _override_db_ok(tenant)
+    try:
+        with TestClient(api.app) as client:
+            r = client.post(
+                "/v0/uploads/finalize",
+                json={
+                    "tenant_id": str(tenant),
+                    "user_id": 1,
+                    "key": "test/key",
+                    "filename": "Cryptomator.dmg",
+                    "mime": "application/x-apple-diskimage",
+                },
+            )
+            assert r.status_code == 400
+            assert "dmg" in r.json()["detail"]
+    finally:
+        api.app.dependency_overrides.clear()
+        monkeypatch.undo()
+
+
+def test_finalize_denies_exe_files():
+    """Test that finalize endpoint rejects .exe files"""
+    import apps.block0_api.main as api
+    tenant = uuid.UUID("11111111-1111-1111-1111-111111111111")
+    monkeypatch = __import__("pytest").MonkeyPatch()
+    monkeypatch.setattr(api, "Storage", lambda: DummyStorage())
+    api.app.dependency_overrides[api.get_db] = _override_db_ok(tenant)
+    try:
+        with TestClient(api.app) as client:
+            r = client.post(
+                "/v0/uploads/finalize",
+                json={
+                    "tenant_id": str(tenant),
+                    "user_id": 1,
+                    "key": "test/key",
+                    "filename": "malware.exe",
+                    "mime": "application/x-msdownload",
+                },
+            )
+            assert r.status_code == 400
+            assert "exe" in r.json()["detail"]
+    finally:
+        api.app.dependency_overrides.clear()
+        monkeypatch.undo()
+

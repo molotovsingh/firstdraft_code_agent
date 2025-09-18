@@ -4,6 +4,7 @@ from typing import List, Optional
 import os
 import uuid
 import subprocess
+import hashlib
 
 from shared.db.session import SessionLocal, get_db
 from sqlalchemy import text as _sql_text, func
@@ -356,6 +357,11 @@ def presign_upload(payload: PresignRequest, request: Request):
     # user_id is accepted but unused here; model validation enforces shape
     filename = payload.filename
     mime = payload.mime or "application/octet-stream"
+
+    # Early denylist check to prevent uploading non-document files
+    denied, reason = deny_reason_for(filename, mime)
+    if denied:
+        raise HTTPException(status_code=400, detail=reason)
 
     # Random sha-like path id and short suffix to avoid collisions
     rand_sha = secrets.token_hex(32)  # 64 hex chars
@@ -796,6 +802,11 @@ def finalize_upload(payload: FinalizeRequest, db=Depends(get_db)):
     key = payload.key
     filename = payload.filename
     mime = payload.mime or "application/octet-stream"
+
+    # Early denylist check to prevent finalizing non-document files
+    denied, reason = deny_reason_for(filename or "", mime)
+    if denied:
+        raise HTTPException(status_code=400, detail=reason)
 
     storage = Storage()
     # Validate tenant and user
